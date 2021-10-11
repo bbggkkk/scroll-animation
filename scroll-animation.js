@@ -4,6 +4,11 @@
             this.element        = element;
             this.scrollTarget   = scrollTarget;
             this.animationName  = animationName;
+
+            this.dataScrollStart = this.element.getAttribute('data-scroll-start');
+            this.dataScrollEnd   = this.element.getAttribute('data-scroll-end');
+            this.element.removeAttribute('data-scroll-start');
+            this.element.removeAttribute('data-scroll-end');
     
             this.body           = this.scrollTarget.constructor.name === 'Window' ? document.documentElement : this.scrollTarget
     
@@ -19,15 +24,28 @@
             this.set();
         }
         set(){
-            const st = this.body.scrollTop;
-            const keys = Object.keys(this.animation[st]);
-            keys.forEach(item => {
-                this.element.style[item] = this.animation[st][item];
-            });
+            requestAnimationFrame(
+                () => {
+                    let Y = this.body.scrollTop;
+                    if(Y < this.scrollStart)    Y = this.scrollStart;
+                    if(Y > this.scrollEnd)      Y = this.scrollEnd;
+                    Y = Y - this.scrollStart;
+                    if(this.prevScroll === Y) return;
+        
+                    this.prevScroll = Y;
+                    const st = this.body.scrollTop;
+                    if(this.animation[st] === undefined)    return;
+                    const keys = Object.keys(this.animation[st]);
+                    keys.forEach(item => {
+                        this.element.style[item] = this.animation[st][item];
+                    });
+                }
+            );
         }
         init(){
-            this.scrollStart  = this.element.getAttribute('data-scroll-start') !== null ? +this.element.getAttribute('data-scroll-start') : this.body.offsetTop;
-            this.scrollEnd    = this.element.getAttribute('data-scroll-end') !== null ? +this.element.getAttribute('data-scroll-end') : this.body.offsetTop + this.body.scrollHeight - this.body.offsetHeight;
+            this.prevScroll   = undefined;
+            this.scrollStart  = this.dataScrollStart !== null ? +this.isEval(this.dataScrollStart) : this.body.offsetTop;
+            this.scrollEnd    = this.dataScrollEnd !== null ? +this.isEval(this.dataScrollEnd) : this.body.offsetTop + this.body.scrollHeight - this.body.offsetHeight;
     
     
             this.animationMap = this.propsKeyNumlize(this.propsNormalize(this.element,this.animationCss,this.props),this.scrollStart,this.scrollEnd);
@@ -35,6 +53,39 @@
             this.aniMapKeys   = Object.keys(this.animationMap);
             this.binMap       = this.createAnimationKeyframe(this.animationMap,this.scrollStart,this.scrollEnd);
             this.animation    = this.a_fillUndefined(this.binMap,this.element,this.animationMap,this.aniMapKeys);
+        }
+
+        isEval(string){
+
+            const parseCode = (string) => {
+                const $parse = [
+                    [new RegExp('#\\(this\\)','g'),'_this.body'],
+                    [new RegExp('#\\(de\\)','g'),'document.documentElement'],
+                    [new RegExp('#\\(qs=(.*?)\\)','g'),'document.querySelector("$1")'],
+                ];
+                const val = $parse.reduce((acc, item) => {
+                    acc = acc.replace(item[0],item[1]);
+                    return acc;
+                },string);
+                return val
+            }
+
+            const _this = this;
+            string = parseCode(string);
+
+            const psCode = string.match(/\$\{(.*?)\}/g);
+            if(psCode !== null){
+                if(/^\$\{.*\}/.test(string)) {
+                    return new Function('_this','return '+string.substring(2,string.length-1))(_this);
+                }else{
+                    return string.replace(/\$\{(.*?)\}/g,(match,p1) => {
+                        return new Function('_this','return '+p1)(_this);
+                    });
+                }
+            }else{
+                return string;
+            }
+
         }
     
         createAnimationKeyframe(numProps,scrollStart,scrollEnd){
