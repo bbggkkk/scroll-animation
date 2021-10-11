@@ -33,11 +33,10 @@
                     if(this.prevScroll === Y) return;
         
                     this.prevScroll = Y;
-                    const st = this.body.scrollTop;
-                    if(this.animation[st] === undefined)    return;
-                    const keys = Object.keys(this.animation[st]);
+                    if(this.animation[Y] === undefined)    return;
+                    const keys = Object.keys(this.animation[Y]);
                     keys.forEach(item => {
-                        this.element.style[item] = this.animation[st][item];
+                        this.element.style[item] = this.animation[Y][item];
                     });
                 }
             );
