@@ -207,14 +207,15 @@
                     const [next, nextKey] = this.a_findNextValue(origin, ele, key, idx, animationMap, map);
                     const [prevNum, nextNum] = [parseInt(prevKey), parseInt(nextKey)];
                     const diff = nextNum - prevNum;
-        
+                    
                     if(parseInt(item) === 0){
                         acc[item][key] = prev;
-                    }else if(parseInt(item) === 100){
+                    }else if(parseInt(item) === Object.keys(acc).length-1){
                         acc[item][key] = next;
                     }else{
                         const pn = prev.match(/\-?\d{0,}\.?\d+/g).map(item => +item);
                         const nn = next.match(/\-?\d{0,}\.?\d+/g).map(item => +item);
+
                         let cnt    = 0;
                         acc[item][key] = next.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
                             const dif = pn[cnt] + ((nn[cnt]-pn[cnt])*(parseInt(item)-prevNum)/diff);
