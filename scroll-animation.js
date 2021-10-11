@@ -20,7 +20,7 @@
             this.resizeObserver = new ResizeObserver(this.init.bind(this));
             this.resizeObserver.observe(this.body);
     
-            this.scrollTarget.addEventListener('scroll',this.set.bind(this));
+            this.scrollTarget.addEventListener('scroll', this.set.bind(this), { passive:true });
             this.set();
         }
         set(){
@@ -160,7 +160,7 @@
                         acc[item][key] = next.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
                             const dif = pn[cnt] + ((nn[cnt]-pn[cnt])*(parseInt(item)-prevNum)/diff);
                             cnt++;
-                            return dif;
+                            return dif.toFixed(4);
                         })
                     }
                 });
@@ -219,7 +219,7 @@
                         acc[item][key] = next.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
                             const dif = pn[cnt] + ((nn[cnt]-pn[cnt])*(parseInt(item)-prevNum)/diff);
                             cnt++;
-                            return dif;
+                            return dif.toFixed(4);
                         })
                     }
                 });
