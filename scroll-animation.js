@@ -29,7 +29,7 @@
             requestAnimationFrame(
                 () => {
 
-                    let Y = this.body.scrollTop;
+                    let Y = Math.round(this.body.scrollTop);
                     if(keyframe !== undefined && typeof keyframe === 'number')  Y = keyframe;
 
                     if(Y < this.scrollStart)    Y = this.scrollStart;
@@ -61,10 +61,28 @@
                 }
             );
         }
+        goToAndPlay(keyframe){
+            let start = keyframe;
+            this.body.scrollTo({top : start});
+            this.body.scrollTo({top : this.scrollEnd, behavior:'smooth'});
+            // requestAnimationFrame(() => {
+            //     this.goToAndStop(start);
+            //     if(start < this.scrollEnd){
+            //         start++;
+            //         setTimeout(() => {
+            //             this.goToAndPlay(start);
+            //         },this.duration);
+            //     }else{
+            //         return;
+            //     }
+            // });
+        }
         init(){
             this.prevScroll   = undefined;
             this.scrollStart  = this.dataScrollStart !== null ? +this.isEval(this.dataScrollStart) : this.body.offsetTop;
             this.scrollEnd    = this.dataScrollEnd !== null ? +this.isEval(this.dataScrollEnd) : this.body.offsetTop + this.body.scrollHeight - this.body.offsetHeight;
+            this.scrollDiff   = this.scrollEnd - this.scrollStart;
+            this.duration     = 1000/this.scrollDiff
     
     
             this.animationMap = this.propsKeyNumlize(this.propsNormalize(this.element,this.animationCss,this.props),this.scrollStart,this.scrollEnd);
@@ -150,7 +168,7 @@
                     const stl = /color/.test(item) && color[animation[i].style[item]] !== undefined ? color[animation[i].style[item]] : animation[i].style[item];
                     if(style.includes(item)){
                         setProp[kt][item] = stl.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
-                            return parseFloat(parseFloat(match).toFixed(3));
+                            return parseFloat(parseFloat(match).toFixed(2));
                         }); 
                         // setProp[kt][item] = stl;
                     }else{
@@ -186,7 +204,7 @@
                         acc[item][key] = next.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
                             const dif = pn[cnt] + ((nn[cnt]-pn[cnt])*(parseInt(item)-prevNum)/diff);
                             cnt++;
-                            return parseFloat(dif.toFixed(3));
+                            return parseFloat(dif.toFixed(2));
                         })
                     }
                 });
@@ -246,7 +264,7 @@
                         acc[item][key] = next.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
                             const dif = pn[cnt] + ((nn[cnt]-pn[cnt])*(parseInt(item)-prevNum)/diff);
                             cnt++;
-                            return parseFloat(dif.toFixed(3));
+                            return parseFloat(dif.toFixed(2));
                         })
                     }
                 });
