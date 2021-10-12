@@ -62,27 +62,14 @@
             );
         }
         goToAndPlay(keyframe){
-            let start = keyframe;
-            this.body.scrollTo({top : start});
+            this.goToAndStop(keyframe);
             this.body.scrollTo({top : this.scrollEnd, behavior:'smooth'});
-            // requestAnimationFrame(() => {
-            //     this.goToAndStop(start);
-            //     if(start < this.scrollEnd){
-            //         start++;
-            //         setTimeout(() => {
-            //             this.goToAndPlay(start);
-            //         },this.duration);
-            //     }else{
-            //         return;
-            //     }
-            // });
         }
         init(){
             this.prevScroll   = undefined;
             this.scrollStart  = this.dataScrollStart !== null ? +this.isEval(this.dataScrollStart) : this.body.offsetTop;
             this.scrollEnd    = this.dataScrollEnd !== null ? +this.isEval(this.dataScrollEnd) : this.body.offsetTop + this.body.scrollHeight - this.body.offsetHeight;
             this.scrollDiff   = this.scrollEnd - this.scrollStart;
-            this.duration     = 1000/this.scrollDiff
     
     
             this.animationMap = this.propsKeyNumlize(this.propsNormalize(this.element,this.animationCss,this.props),this.scrollStart,this.scrollEnd);
