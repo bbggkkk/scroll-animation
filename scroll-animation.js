@@ -20,24 +20,47 @@
             this.resizeObserver = new ResizeObserver(this.init.bind(this));
             this.resizeObserver.observe(this.body);
     
-            this.scrollTarget.addEventListener('scroll', this.set.bind(this), { passive:true });
-            this.set();
+            this.scrollTarget.addEventListener('scroll', this.goToAndStop.bind(this), { passive:true });
+            this.goToAndStop();
         }
-        set(){
+        goToAndStop(keyframe){
+            if(this.scrolling)  return;
+            this.scrolling = true;
             requestAnimationFrame(
                 () => {
+                    console.time('scroll');
+
                     let Y = this.body.scrollTop;
+                    if(keyframe !== undefined && typeof keyframe === 'number')  Y = keyframe;
+
                     if(Y < this.scrollStart)    Y = this.scrollStart;
                     if(Y > this.scrollEnd)      Y = this.scrollEnd;
                     Y = Y - this.scrollStart;
-                    if(this.prevScroll === Y) return;
+                    if(this.prevScroll === Y) {
+                        this.element.style.willChange = 'auto';
+                        this.scrolling = false;
+                        return;
+                    }
+
+                    if(this.element.style.willChange === 'auto'){
+                        this.element.style.willChange = this.props.join(',');
+                    }
         
                     this.prevScroll = Y;
-                    if(this.animation[Y] === undefined)    return;
-                    const keys = Object.keys(this.animation[Y]);
-                    keys.forEach(item => {
-                        this.element.style[item] = this.animation[Y][item];
-                    });
+                    if(this.animation[Y] !== undefined){
+                        const keys = this.props;
+                        keys.forEach(item => {
+                            this.element.style[item] = this.animation[Y][item];
+                        });
+                        if(this.element.getAttribute('data-scroll-animation') === 'profile'){
+                            // document.querySelector('#txt').innerText = JSON.stringify(this.animation[this.scrollEnd]);
+                            // document.querySelector('#txt').innerText = (this.element.getAttribute('style'));
+                        }
+                    }
+
+                    console.timeEnd('scroll');
+
+                    this.scrolling = false;
                 }
             );
         }
@@ -52,6 +75,9 @@
             this.aniMapKeys   = Object.keys(this.animationMap);
             this.binMap       = this.createAnimationKeyframe(this.animationMap,this.scrollStart,this.scrollEnd);
             this.animation    = this.a_fillUndefined(this.binMap,this.element,this.animationMap,this.aniMapKeys);
+
+            this.scrolling = false;
+            this.element.style.willChange = 'auto';
         }
 
         isEval(string){
@@ -126,7 +152,10 @@
                 props.forEach(item => {
                     const stl = /color/.test(item) && color[animation[i].style[item]] !== undefined ? color[animation[i].style[item]] : animation[i].style[item];
                     if(style.includes(item)){
-                        setProp[kt][item] = stl;
+                        setProp[kt][item] = stl.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
+                            return parseFloat(parseFloat(match).toFixed(3));
+                        }); 
+                        // setProp[kt][item] = stl;
                     }else{
                         setProp[kt][item] = undefined;
                     }
@@ -160,7 +189,7 @@
                         acc[item][key] = next.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
                             const dif = pn[cnt] + ((nn[cnt]-pn[cnt])*(parseInt(item)-prevNum)/diff);
                             cnt++;
-                            return dif.toFixed(4);
+                            return parseFloat(dif.toFixed(3));
                         })
                     }
                 });
@@ -220,7 +249,7 @@
                         acc[item][key] = next.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
                             const dif = pn[cnt] + ((nn[cnt]-pn[cnt])*(parseInt(item)-prevNum)/diff);
                             cnt++;
-                            return dif.toFixed(4);
+                            return parseFloat(dif.toFixed(3));
                         })
                     }
                 });

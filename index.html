@@ -43,7 +43,7 @@
                 background:green;
             }
             100% {
-                transform:translate(calc(0vw - 0% - 0px), calc(0vh - 0%)) scale(0.2);
+                transform:translate(calc(0vw - 0% - 0.0001px), calc(0vh - 0%)) scale(0.2);
                 background:yellow;
             }
         }
@@ -52,7 +52,7 @@
 <body>
     
     <header style="width:100%; height:60px; background:gray; position:fixed; top:0; left:0; z-index:9999; padding:0 12px; box-sizing:border-box;">
-        <div    style="width:300px; height:300px; background:green; transform-origin:top left;"
+        <div    style="width:300px; height:300px; background:green; transform-origin:top left; position:absolute;"
                 data-scroll-animation="profile"
                 data-scroll-start="0"
                 data-scroll-end="500"></div>
@@ -60,11 +60,8 @@
 
 
     <div id="hi"  style="width:100%; height:200vh; position:relative;">
-        <div    style="width:100%; height:100vh; position:sticky; top:0; background:blue;"
-                data-scroll-animation="hi"
-                data-scroll-start="${#(qs=#hi).offsetTop}"
-                data-scroll-end="${#(qs=#hi).offsetHeight - #(this).offsetHeight}">
-            <p  style="position:absolute; top:50%; left:50%; color:#fff; transform:translate(-50%,-50%);">hi2</p>
+        <div    style="width:100%; height:100vh; position:sticky; top:0; background:blue;">
+            <p  style="position:absolute; top:50%; left:50%; color:#fff; transform:translate(-50%,-50%);" id='txt'>hi2</p>
         </div>
     </div>
     <div style="height:400vh;"></div>
