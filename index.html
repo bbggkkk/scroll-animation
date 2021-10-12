@@ -22,51 +22,29 @@
             display:block;
             width:100%;
         }
-        @keyframes hi {
-            0% {
-                clip-path:circle(0%);
-            }
-            50% {
-                clip-path:circle(100%);
-            }
-            100% {
-                clip-path:circle(0%);
-            }
-        }
         @keyframes profile {
             0% {
-                border-radius:0%;
                 transform:translate(calc(50vw - 50% - 12px), calc(50vh - 100%)) scale(1);
-            }
-            50% {
-                border-radius:50%;
-                background:green;
             }
             100% {
                 transform:translate(calc(0vw - 0% - 0.0001px), calc(0vh - 0%)) scale(0.2);
-                background:yellow;
             }
         }
     </style>
 </head>
 <body>
     
-    <header style="width:100%; height:60px; background:gray; position:fixed; top:0; left:0; z-index:9999; padding:0 12px; box-sizing:border-box;">
+    <header     style="width:100%; height:60px; background:gray; position:fixed; top:0; left:0; z-index:9999; padding:0 12px; box-sizing:border-box;">
         <div    style="width:300px; height:300px; background:green; transform-origin:top left; position:absolute;"
                 data-scroll-animation="profile"
                 data-scroll-start="0"
-                data-scroll-end="500"></div>
+                data-scroll-end="${#(de).offsetHeight}"></div>
     </header>
 
+    <article id="introduce">
 
-    <div id="hi"  style="width:100%; height:200vh; position:relative;">
-        <div    style="width:100%; height:100vh; position:sticky; top:0; background:blue;"
-                data-scroll-animation="hi"
-                data-scroll-start="${#(qs=#hi).offsetTop}"
-                data-scroll-end="${#(qs=#hi).offsetHeight - #(this).offsetHeight}">
-            <p  style="position:absolute; top:50%; left:50%; color:#fff; transform:translate(-50%,-50%);" id='txt'>hi2</p>
-        </div>
-    </div>
+    </article>
+
     <div style="height:400vh;"></div>
 
     <script src="./scroll-animation.js"></script>
