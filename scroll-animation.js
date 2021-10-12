@@ -28,7 +28,6 @@
             this.scrolling = true;
             requestAnimationFrame(
                 () => {
-                    console.time('scroll');
 
                     let Y = this.body.scrollTop;
                     if(keyframe !== undefined && typeof keyframe === 'number')  Y = keyframe;
@@ -42,6 +41,8 @@
                         return;
                     }
 
+                    // console.time('scroll');
+
                     if(this.element.style.willChange === 'auto'){
                         this.element.style.willChange = this.props.join(',');
                     }
@@ -52,13 +53,9 @@
                         keys.forEach(item => {
                             this.element.style[item] = this.animation[Y][item];
                         });
-                        if(this.element.getAttribute('data-scroll-animation') === 'profile'){
-                            // document.querySelector('#txt').innerText = JSON.stringify(this.animation[this.scrollEnd]);
-                            // document.querySelector('#txt').innerText = (this.element.getAttribute('style'));
-                        }
                     }
 
-                    console.timeEnd('scroll');
+                    // console.timeEnd('scroll');
 
                     this.scrolling = false;
                 }
