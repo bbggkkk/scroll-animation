@@ -22,28 +22,61 @@
             display:block;
             width:100%;
         }
+
+        .box {
+            width:min(80vw,320px);
+            height:min(80vw,320px);
+            background:#ffc72c;
+            box-shadow:0 16px 32px rgba(0,0,0,0.1);
+            border-radius:min(10vw,48px);
+            position:fixed;
+            top:50%;
+            left:50%;
+        }
+        
         @keyframes profile {
+            0% {
+                transform:translate(0%,0%);
+            }
+            30% {
+                transform:translate(-100%,0%);
+            }
+            40% {
+                transform:translate(0%,0%);
+            }
+            60% {
+                transform:translate(0%,0%);
+            }
+            80% {
+                transform:translate(0%,0%);
+            }
+            100% {
+                transform:translate(0%,0%);
+            }
+        }
+        /* @keyframes profile {
             0% {
                 transform:translate(calc(50vw - 50% - 12px), max(calc(50vh - 50% - 60px), 80px)) scale(1);
             }
             100% {
-                transform:translate(calc(0vw - 0% - 0.0001px), max(calc(0vh - 0% - 0px), 0px)) scale(0.2);
+                transform:translate(calc(0vw - 0% - 0.0001px), max(calc(0vh - 0% - 0.0001px), 0px)) scale(0.2);
             }
-        }
+        } */
     </style>
 </head>
 <body>
     
-    <header     style="width:100%; height:60px; background:gray; position:fixed; top:0; left:0; z-index:9999; padding:0 12px; box-sizing:border-box;">
+    <!-- <header     style="width:100%; height:60px; background:gray; position:fixed; top:0; left:0; z-index:9999; padding:0 12px; box-sizing:border-box;">
         <div    style="width:300px; height:300px; background:green; transform-origin:top left; position:absolute;"
                 data-scroll-animation="profile"
                 data-scroll-start="0"
                 data-scroll-end="${#(de).offsetHeight}"></div>
-    </header>
-
-    <article id="introduce">
-
-    </article>
+    </header> -->
+    
+    <div    class="box"
+            data-scroll-animation="profile"
+            data-scroll-start="0"
+            data-scroll-end="${#(de).offsetHeight}"></div>
 
     <div style="height:400vh;"></div>
 

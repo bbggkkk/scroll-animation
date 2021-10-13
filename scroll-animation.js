@@ -1,14 +1,12 @@
 (function(){
     class ScrollAnimation {
-        constructor(element, scrollTarget, animationName){
+        constructor(element, scrollTarget, animationName, start, end){
             this.element        = element;
             this.scrollTarget   = scrollTarget;
             this.animationName  = animationName;
 
-            this.dataScrollStart = this.element.getAttribute('data-scroll-start');
-            this.dataScrollEnd   = this.element.getAttribute('data-scroll-end');
-            this.element.removeAttribute('data-scroll-start');
-            this.element.removeAttribute('data-scroll-end');
+            this.dataScrollStart = start;
+            this.dataScrollEnd   = end;
     
             this.body           = this.scrollTarget.constructor.name === 'Window' ? document.documentElement : this.scrollTarget
     

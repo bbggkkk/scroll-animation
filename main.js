@@ -1,4 +1,6 @@
-const element = document.querySelectorAll('[data-scroll-animation]');
-for(let i=0; i<element.length; i++){
-    element[i].scrollAnimation = new ScrollAnimation(element[i],window,element[i].getAttribute('data-scroll-animation'));
-}
+const element   = document.querySelector('.box');
+const start     = 0;
+const end       = document.documentElement.scrollHeight - document.documentElement.offsetHeight;
+const animation = 'profile';
+
+window.scrollElement = new ScrollAnimation(element,window,animation,start,end);
