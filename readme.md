@@ -52,3 +52,9 @@ const animation = new ScrollAnimation(element, scrollTarget, animation, start, e
 ```
 
 4. 이제 스크롤을 하면 #animation 엘리먼트의 배경색과 글자색이 바뀝니다.
+
+---
+
+## 알아 두면 좋은 사항
+
+- 애니메이션에서 사용되는 CSS속성은 애니메이션의 처음과 끝에 초기값과 마지막값이 정의되어 있으면 좋습니다. 작성되어있지 않을 경우 라이브러리에서 추측한 값을 사용합니다.
