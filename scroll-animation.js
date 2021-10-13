@@ -13,13 +13,11 @@
             this.animationCss   = this.getAllAnimations()[this.animationName];
             this.props          = this.getAnimationProps(this.animationCss);
             
-            this.init();
-            
+            // this.init();
             this.resizeObserver = new ResizeObserver(this.init.bind(this));
             this.resizeObserver.observe(this.body);
     
             this.scrollTarget.addEventListener('scroll', this.goToAndStop.bind(this), { passive:true });
-            this.goToAndStop();
 
 
             setTimeout(() => {
@@ -52,7 +50,6 @@
                     }
 
                     // console.time('scroll');
-
                     if(this.element.style.willChange === 'auto'){
                         this.element.style.willChange = this.props.join(',');
                     }
@@ -94,6 +91,7 @@
 
             this.scrolling = false;
             this.element.style.willChange = 'auto';
+            this.goToAndStop();
         }
 
         isEval(string){
