@@ -26,7 +26,7 @@
                 for(let i=0; i<=this.scrollEnd; i++){
                     if(this.animation[i] === undefined){
                         setTimeout(() => {
-                            this.animation[i] = this.s_fillUndefined(this.animation[i], this.element, this.animationMap, this.aniMapKeys, i, this.props);
+                            this.animation[i] = this.fillUndefinedSingle(this.animation[i], this.element, this.animationMap, this.aniMapKeys, i, this.props);
                         },0);
                     }
                 }
@@ -59,9 +59,8 @@
     
 
                     this.prevScroll = Y;
-                    // console.log(this.animation, Y, this.animation[0]);
                     if(this.animation[Y] === undefined){
-                        this.animation[Y] = this.s_fillUndefined(this.animation[Y], this.element, this.animationMap, this.aniMapKeys, Y, this.props);
+                        this.animation[Y] = this.fillUndefinedSingle(this.animation[Y], this.element, this.animationMap, this.aniMapKeys, Y, this.props);
                     }
                     if(this.animation[Y] !== undefined){
                         const keys = this.props;
@@ -92,7 +91,6 @@
             this.aniMapKeys   = Object.keys(this.animationMap);
             this.binMap       = this.createAnimationKeyframe(this.animationMap,this.scrollStart,this.scrollEnd);
             this.animation    = JSON.parse(JSON.stringify(this.animationMap));
-            // this.animation    = this.a_fillUndefined(this.binMap,this.element,this.animationMap,this.aniMapKeys);
 
             this.scrolling = false;
             this.element.style.willChange = 'auto';
@@ -173,7 +171,6 @@
                         setProp[kt][item] = stl.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
                             return parseFloat(parseFloat(match).toFixed(2));
                         }); 
-                        // setProp[kt][item] = stl;
                     }else{
                         setProp[kt][item] = undefined;
                     }
@@ -244,13 +241,13 @@
             }
             return this.findNextValue(props, element, value, idx+1);
         }
-        s_fillUndefined(props, element, animationMap, map, idx, $props){
+        fillUndefinedSingle(props, element, animationMap, map, idx, $props){
             const origin = map;
             const ele    = element;
 
             const val = $props.reduce((acc,key) => {
-                const [prev, prevKey] = this.a_findPrevValue(origin, ele, key, idx, animationMap, map);
-                const [next, nextKey] = this.a_findNextValue(origin, ele, key, idx, animationMap, map);
+                const [prev, prevKey] = this.findPrevValueSingle(origin, ele, key, idx, animationMap, map);
+                const [next, nextKey] = this.findNextValueSingle(origin, ele, key, idx, animationMap, map);
                 const [prevNum, nextNum] = [parseInt(prevKey), parseInt(nextKey)];
                 const diff = nextNum - prevNum;
 
@@ -275,37 +272,7 @@
             return val;
 
         }
-        a_fillUndefined(props, element, animationMap, map){
-            const origin = props;
-            const ele    = element;
-            return Object.keys(origin).reduce((acc, item, idx) => {
-                const undfKeys = this.hasUndefined(origin[item]);
-                undfKeys.forEach(key => {
-                    const [prev, prevKey] = this.a_findPrevValue(origin, ele, key, idx, animationMap, map);
-                    const [next, nextKey] = this.a_findNextValue(origin, ele, key, idx, animationMap, map);
-                    const [prevNum, nextNum] = [parseInt(prevKey), parseInt(nextKey)];
-                    const diff = nextNum - prevNum;
-                    
-                    if(parseInt(item) === 0){
-                        acc[item][key] = prev;
-                    }else if(parseInt(item) === Object.keys(acc).length-1){
-                        acc[item][key] = next;
-                    }else{
-                        const pn = prev.match(/\-?\d{0,}\.?\d+/g).map(item => +item);
-                        const nn = next.match(/\-?\d{0,}\.?\d+/g).map(item => +item);
-
-                        let cnt    = 0;
-                        acc[item][key] = next.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
-                            const dif = pn[cnt] + ((nn[cnt]-pn[cnt])*(parseInt(item)-prevNum)/diff);
-                            cnt++;
-                            return parseFloat(dif.toFixed(2));
-                        })
-                    }
-                });
-                return acc;
-            },JSON.parse(JSON.stringify(origin)));
-        }
-        a_findPrevValue(props,element,value,idx,animationMap,map){
+        findPrevValueSingle(props,element,value,idx,animationMap,map){
             for(let i=map.length-1; i>=0; i--){
                 if(idx > map[i]){
                     if(animationMap[map[i]][value] !== undefined){
@@ -319,7 +286,7 @@
             }
             return [animationMap[map[0]][value], map[0]];
         }
-        a_findNextValue(props,element,value,idx,animationMap,map){
+        findNextValueSingle(props,element,value,idx,animationMap,map){
             for(let i=0; i<map.length; i++){
                 if(idx < map[i]){
                     if(animationMap[map[i]][value] !== undefined){
