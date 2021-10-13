@@ -70,5 +70,7 @@ const animation = new ScrollAnimation(element, scrollTarget, animation, start, e
     100% { transform:scale(calc(0% + 0vw));   }
     ```
 
+---
+
 ## 데모
 [데모페이지](https://bbggkkk.github.io/scroll-animation/)
