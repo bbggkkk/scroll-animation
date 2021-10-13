@@ -50,7 +50,6 @@
 
                     this.prevScroll = Y;
                     // console.log(this.animation, Y, this.animation[0]);
-                    console.log(this.animation[Y]);
                     if(this.animation[Y] === undefined){
                         this.animation[Y] = this.s_fillUndefined(this.animation[Y], this.element, this.animationMap, this.aniMapKeys, Y, this.props);
                     }
@@ -82,7 +81,7 @@
             
             this.aniMapKeys   = Object.keys(this.animationMap);
             this.binMap       = this.createAnimationKeyframe(this.animationMap,this.scrollStart,this.scrollEnd);
-            this.animation    = {};
+            this.animation    = JSON.parse(JSON.stringify(this.animationMap));
             // this.animation    = this.a_fillUndefined(this.binMap,this.element,this.animationMap,this.aniMapKeys);
 
             this.scrolling = false;
