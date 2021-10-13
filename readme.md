@@ -58,3 +58,14 @@ const animation = new ScrollAnimation(element, scrollTarget, animation, start, e
 ## 알아 두면 좋은 사항
 
 - 애니메이션에서 사용되는 CSS속성은 애니메이션의 처음과 끝에 초기값과 마지막값이 정의되어 있으면 좋습니다. 작성되어있지 않을 경우 라이브러리에서 추측한 값을 사용합니다.
+- 애니메이션을 작성할 때, 각 CSS에서 작성한 순서와 형식을 지키는 것이 좋습니다. 아직 라이브러리의 파싱이 완벽하지 않아서이며, 추후 개선할 예정입니다.
+    - 좋은 예시)
+    ```css
+    0%   { transform:scale(calc(50% + 50vw)); }
+    100% { transform:scale(calc(0% + 0vw));   }
+    ```
+    - 좋지 않은 예시)
+    ```css
+    0%   { transform:scale(calc(50vw + 50%)); }
+    100% { transform:scale(calc(0vw + 50%));   }
+    ```
