@@ -163,13 +163,15 @@
     
         propsNormalize(element, animation, props){
             const setProp = {};
-            const color   = this.getColor();
             for(let i=0; i<animation.length; i++){
+                // const style = this.parseCSS(animation[i].cssText);
+                // const styleKeys = Object.keys(style);
                 const style = [...animation[i].style];
                 const kt = animation[i].keyText;
                 setProp[kt] = {};
                 props.forEach(item => {
-                    const stl = /color/.test(item) && color[animation[i].style[item]] !== undefined ? color[animation[i].style[item]] : animation[i].style[item];
+                    const isColor = this.isColor(animation[i].style[item]);
+                    const stl = isColor ? this.getColor(animation[i].style[item]) : animation[i].style[item];
                     if(style.includes(item)){
                         setProp[kt][item] = stl.replace(/\-?\d{0,}\.?\d+/g,(match, idx) => {
                             return parseFloat(parseFloat(match).toFixed(2));
@@ -221,7 +223,10 @@
                 if(props[id[idx]][value] !== undefined){
                     return [props[id[idx]][value], id[idx]];
                 }else{
-                    return [getComputedStyle(element)[value], id[idx]];
+                    const style = getComputedStyle(element)[value];
+                    const isColor = this.isColor(style);
+                    const set     = isColor ? this.getColor(style) : style;
+                    return [set, id[idx]];
                 }
             }
             if(props[prev][value] !== undefined){
@@ -236,7 +241,10 @@
                 if(props[id[idx]][value] !== undefined){
                     return [props[id[idx]][value], id[idx]];
                 }else{
-                    return [getComputedStyle(element)[value], id[idx]];
+                    const style = getComputedStyle(element)[value];
+                    const isColor = this.isColor(style);
+                    const set     = isColor ? this.getColor(style) : style;
+                    return [set, id[idx]];
                 }
             }
             if(props[next][value] !== undefined){
@@ -249,6 +257,7 @@
             const ele    = element;
 
             const val = $props.reduce((acc,key) => {
+                // const $key = this.cssNameJavascriptlize(key);
                 const [prev, prevKey] = this.findPrevValueSingle(origin, ele, key, idx, animationMap, map);
                 const [next, nextKey] = this.findNextValueSingle(origin, ele, key, idx, animationMap, map);
                 const [prevNum, nextNum] = [parseInt(prevKey), parseInt(nextKey)];
@@ -281,7 +290,10 @@
                     if(animationMap[map[i]][value] !== undefined){
                         return [animationMap[map[i]][value], map[i]];
                     }else{
-                        return [getComputedStyle(element)[value], map[i]];
+                        const style = getComputedStyle(element)[value];
+                        const isColor = this.isColor(style);
+                        const set     = isColor ? this.getColor(style) : style;
+                        return [set, map[i]];
                     }
                 }else{
                     continue;
@@ -295,7 +307,10 @@
                     if(animationMap[map[i]][value] !== undefined){
                         return [animationMap[map[i]][value], map[i]];
                     }else{
-                        return [getComputedStyle(element)[value], map[i]];
+                        const style = getComputedStyle(element)[value];
+                        const isColor = this.isColor(style);
+                        const set     = isColor ? this.getColor(style) : style;
+                        return [set, map[i]];
                     }
                 }else{
                     continue;
@@ -339,161 +354,380 @@
             return [...new Set(ani.map(item => this.getKeyframeProps(item)).flat())];
         }
         getKeyframeProps(keyframe){
-            const color = this.getColor();
             return [...keyframe.style].filter(item => {
-                const val = /color/.test(item) && color[keyframe.style[item]] !== undefined ? color[keyframe.style[item]] : keyframe.style[item]
+                const isColor = this.isColor(keyframe.style[item]);
+                const val = isColor ? this.getColor(keyframe.style[item]) : keyframe.style[item];
                 return /\d/.test(val);
             });
         }
+        parseCSS($css){
+            const css       = $css.replace(/;$/,"").match(/\{(.*?)\}/)[1].trim();
+            console.log(css);
+            const cssJS     = css.replace(/\n|(;)$/g,"")
+                .split(";")
+                .map(item => item.replace(/\-([a-z])/g,(match,p1)=>p1.toUpperCase()))
+                .reduce( (acc,item) => {
+                    acc[item.split(":")[0].trim()] = this.isEval(item.split(":")[1].replace(/ +/g," ").trim());
+                    return acc;
+                },{});
+            return cssJS;
+        }
+        isColor(val){
+            const reg = new RegExp('rgba?\\(.*?\\)\|#[0-9a-fA-F]{3}\|#[0-9a-fA-F]{6}\|#[0-9a-fA-F]{8}\|black\|white\|red\|lime\|blue\|yellow\|cyan\|aqua\|magenta\|fuchsia\|silver\|gray\|maroon\|olive\|green\|purple\|teal\|navy\|darkred\|brown\|firebrick\|crimson\|tomato\|coral\|indianred\|lightcoral\|darksalmon\|salmon\|lightsalmon\|orangered\|darkorange\|orange\|gold\|darkgoldenrod\|goldenrod\|palegoldenrod\|darkkhaki\|khaki\|yellowgreen\|darkolivegree\| olivedrab\|lawngreen\|chartreuse\|greenyellow\|darkgreen\|forestgreen\|limegreen\|lightgreen\|palegreen\|darkseagreen\|mediumspringg\|springgreen\|seagreen\|mediumaquamar\|mediumseagree\|lightseagreen\|darkslategray\|darkcyan\|lightcyan\|darkturquoise\|turquoise\|mediumturquoi\|paleturquoise\|aquamarine\|powderblue\|cadetblue\|steelblue\|cornflowerblu\|deepskyblue\|dodgerblue\|lightblue\|skyblue\|lightskyblue\|midnightblue\|darkblue\|mediumblue\|royalblue\|blueviolet\|indigo\|darkslateblue\|slateblue\|mediumslatebl\|mediumpurple\|darkmagenta\|darkviolet\|darkorchid\|mediumorchid\|thistle\|plum\|violet\|orchid\|mediumvioletr\|palevioletred\|deeppink\|hotpink\|lightpink\|pink\|antiquewhite\|beige\|bisque\|blanchedalmon\|wheat\|cornsilk\|lemonchiffon\|lightgoldenro\|lightyellow\|saddlebrown\|sienna\|chocolate\|peru\|sandybrown\|burlywood\|tan\|rosybrown\|moccasin\|navajowhite\|peachpuff\|mistyrose\|lavenderblush\|linen\|oldlace\|papayawhip\|seashell\|mintcream\|slategray\|lightslategra\|lightsteelblu\|lavender\|floralwhite\|aliceblue\|ghostwhite\|honeydew\|ivory\|azure\|snow\|dimgray\|dimgrey\|grey\|darkgray\|darkgrey\|lightgray\|lightgrey\|gainsboro\|whitesmoke','g');
+            return reg.test(val);
+        }
         getColor(name){
-            const colors = {
-                "black": "rgb(0,0,0)",
-                "white": "rgb(255,255,255)",
-                "red": "rgb(255,0,0)",
-                "lime": "rgb(0,255,0)",
-                "blue": "rgb(0,0,255)",
-                "yellow": "rgb(255,255,0)",
-                "cyan": "rgb(0,255,255)",
-                "aqua": "rgb(0,255,255)",
-                "magenta": "rgb(255,0,255)",
-                "fuchsia": "rgb(255,0,255)",
-                "silver": "rgb(192,192,192)",
-                "gray": "rgb(128,128,128)",
-                "maroon": "rgb(128,0,0)",
-                "olive": "rgb(128,128,0)",
-                "green": "rgb(0,128,0)",
-                "purple": "rgb(128,0,128)",
-                "teal": "rgb(0,128,128)",
-                "navy": "rgb(0,0,128)",
-                "darkred": "rgb(139,0,0)",
-                "brown": "rgb(165,42,42)",
-                "firebrick": "rgb(178,34,34)",
-                "crimson": "rgb(220,20,60)",
-                "tomato": "rgb(255,99,71)",
-                "coral": "rgb(255,127,80)",
-                "indianred": "rgb(205,92,92)",
-                "lightcoral": "rgb(240,128,128)",
-                "darksalmon": "rgb(233,150,122)",
-                "salmon": "rgb(250,128,114)",
-                "lightsalmon": "rgb(255,160,122)",
-                "orangered": "rgb(255,69,0)",
-                "darkorange": "rgb(255,140,0)",
-                "orange": "rgb(255,165,0)",
-                "gold": "rgb(255,215,0)",
-                "darkgoldenrod": "rgb(184,134,11)",
-                "goldenrod": "rgb(218,165,32)",
-                "palegoldenrod": "rgb(238,232,170)",
-                "darkkhaki": "rgb(189,183,107)",
-                "khaki": "rgb(240,230,140)",
-                "yellowgreen": "rgb(154,205,50)",
-                "darkolivegreen": "rgb(85,107,47)",
-                "olivedrab": "rgb(107,142,35)",
-                "lawngreen": "rgb(124,252,0)",
-                "chartreuse": "rgb(127,255,0)",
-                "greenyellow": "rgb(173,255,47)",
-                "darkgreen": "rgb(0,100,0)",
-                "forestgreen": "rgb(34,139,34)",
-                "limegreen": "rgb(50,205,50)",
-                "lightgreen": "rgb(144,238,144)",
-                "palegreen": "rgb(152,251,152)",
-                "darkseagreen": "rgb(143,188,143)",
-                "mediumspringgreen": "rgb(0,250,154)",
-                "springgreen": "rgb(0,255,127)",
-                "seagreen": "rgb(46,139,87)",
-                "mediumaquamarine": "rgb(102,205,170)",
-                "mediumseagreen": "rgb(60,179,113)",
-                "lightseagreen": "rgb(32,178,170)",
-                "darkslategray": "rgb(47,79,79)",
-                "darkcyan": "rgb(0,139,139)",
-                "lightcyan": "rgb(224,255,255)",
-                "darkturquoise": "rgb(0,206,209)",
-                "turquoise": "rgb(64,224,208)",
-                "mediumturquoise": "rgb(72,209,204)",
-                "paleturquoise": "rgb(175,238,238)",
-                "aquamarine": "rgb(127,255,212)",
-                "powderblue": "rgb(176,224,230)",
-                "cadetblue": "rgb(95,158,160)",
-                "steelblue": "rgb(70,130,180)",
-                "cornflowerblue": "rgb(100,149,237)",
-                "deepskyblue": "rgb(0,191,255)",
-                "dodgerblue": "rgb(30,144,255)",
-                "lightblue": "rgb(173,216,230)",
-                "skyblue": "rgb(135,206,235)",
-                "lightskyblue": "rgb(135,206,250)",
-                "midnightblue": "rgb(25,25,112)",
-                "darkblue": "rgb(0,0,139)",
-                "mediumblue": "rgb(0,0,205)",
-                "royalblue": "rgb(65,105,225)",
-                "blueviolet": "rgb(138,43,226)",
-                "indigo": "rgb(75,0,130)",
-                "darkslateblue": "rgb(72,61,139)",
-                "slateblue": "rgb(106,90,205)",
-                "mediumslateblue": "rgb(123,104,238)",
-                "mediumpurple": "rgb(147,112,219)",
-                "darkmagenta": "rgb(139,0,139)",
-                "darkviolet": "rgb(148,0,211)",
-                "darkorchid": "rgb(153,50,204)",
-                "mediumorchid": "rgb(186,85,211)",
-                "thistle": "rgb(216,191,216)",
-                "plum": "rgb(221,160,221)",
-                "violet": "rgb(238,130,238)",
-                "orchid": "rgb(218,112,214)",
-                "mediumvioletred": "rgb(199,21,133)",
-                "palevioletred": "rgb(219,112,147)",
-                "deeppink": "rgb(255,20,147)",
-                "hotpink": "rgb(255,105,180)",
-                "lightpink": "rgb(255,182,193)",
-                "pink": "rgb(255,192,203)",
-                "antiquewhite": "rgb(250,235,215)",
-                "beige": "rgb(245,245,220)",
-                "bisque": "rgb(255,228,196)",
-                "blanchedalmond": "rgb(255,235,205)",
-                "wheat": "rgb(245,222,179)",
-                "cornsilk": "rgb(255,248,220)",
-                "lemonchiffon": "rgb(255,250,205)",
-                "lightgoldenrodyellow": "rgb(250,250,210)",
-                "lightyellow": "rgb(255,255,224)",
-                "saddlebrown": "rgb(139,69,19)",
-                "sienna": "rgb(160,82,45)",
-                "chocolate": "rgb(210,105,30)",
-                "peru": "rgb(205,133,63)",
-                "sandybrown": "rgb(244,164,96)",
-                "burlywood": "rgb(222,184,135)",
-                "tan": "rgb(210,180,140)",
-                "rosybrown": "rgb(188,143,143)",
-                "moccasin": "rgb(255,228,181)",
-                "navajowhite": "rgb(255,222,173)",
-                "peachpuff": "rgb(255,218,185)",
-                "mistyrose": "rgb(255,228,225)",
-                "lavenderblush": "rgb(255,240,245)",
-                "linen": "rgb(250,240,230)",
-                "oldlace": "rgb(253,245,230)",
-                "papayawhip": "rgb(255,239,213)",
-                "seashell": "rgb(255,245,238)",
-                "mintcream": "rgb(245,255,250)",
-                "slategray": "rgb(112,128,144)",
-                "lightslategray": "rgb(119,136,153)",
-                "lightsteelblue": "rgb(176,196,222)",
-                "lavender": "rgb(230,230,250)",
-                "floralwhite": "rgb(255,250,240)",
-                "aliceblue": "rgb(240,248,255)",
-                "ghostwhite": "rgb(248,248,255)",
-                "honeydew": "rgb(240,255,240)",
-                "ivory": "rgb(255,255,240)",
-                "azure": "rgb(240,255,255)",
-                "snow": "rgb(255,250,250)",
-                "dimgray": "rgb(105,105,105)",
-                "dimgrey": "rgb(105,105,105)",
-                "grey": "rgb(128,128,128)",
-                "darkgray": "rgb(169,169,169)",
-                "darkgrey": "rgb(169,169,169)",
-                "lightgray": "rgb(211,211,211)",
-                "lightgrey": "rgb(211,211,211)",
-                "gainsboro": "rgb(220,220,220)",
-                "whitesmoke": "rgb(245,245,245)"
-            };
-        
-            return name === undefined ? colors : colors[name];
+            const reg = new RegExp('rgba?\\(.*?\\)\|#[0-9a-fA-F]{3}\|#[0-9a-fA-F]{6}\|#[0-9a-fA-F]{8}\|black\|white\|red\|lime\|blue\|yellow\|cyan\|aqua\|magenta\|fuchsia\|silver\|gray\|maroon\|olive\|green\|purple\|teal\|navy\|darkred\|brown\|firebrick\|crimson\|tomato\|coral\|indianred\|lightcoral\|darksalmon\|salmon\|lightsalmon\|orangered\|darkorange\|orange\|gold\|darkgoldenrod\|goldenrod\|palegoldenrod\|darkkhaki\|khaki\|yellowgreen\|darkolivegree\| olivedrab\|lawngreen\|chartreuse\|greenyellow\|darkgreen\|forestgreen\|limegreen\|lightgreen\|palegreen\|darkseagreen\|mediumspringg\|springgreen\|seagreen\|mediumaquamar\|mediumseagree\|lightseagreen\|darkslategray\|darkcyan\|lightcyan\|darkturquoise\|turquoise\|mediumturquoi\|paleturquoise\|aquamarine\|powderblue\|cadetblue\|steelblue\|cornflowerblu\|deepskyblue\|dodgerblue\|lightblue\|skyblue\|lightskyblue\|midnightblue\|darkblue\|mediumblue\|royalblue\|blueviolet\|indigo\|darkslateblue\|slateblue\|mediumslatebl\|mediumpurple\|darkmagenta\|darkviolet\|darkorchid\|mediumorchid\|thistle\|plum\|violet\|orchid\|mediumvioletr\|palevioletred\|deeppink\|hotpink\|lightpink\|pink\|antiquewhite\|beige\|bisque\|blanchedalmon\|wheat\|cornsilk\|lemonchiffon\|lightgoldenro\|lightyellow\|saddlebrown\|sienna\|chocolate\|peru\|sandybrown\|burlywood\|tan\|rosybrown\|moccasin\|navajowhite\|peachpuff\|mistyrose\|lavenderblush\|linen\|oldlace\|papayawhip\|seashell\|mintcream\|slategray\|lightslategra\|lightsteelblu\|lavender\|floralwhite\|aliceblue\|ghostwhite\|honeydew\|ivory\|azure\|snow\|dimgray\|dimgrey\|grey\|darkgray\|darkgrey\|lightgray\|lightgrey\|gainsboro\|whitesmoke','g');
+            let str = name.replace(reg,(match, p1) => {
+                if(match.substr(0,1) === '#'){
+                    let color = '';
+                    switch (match.length){
+                        case 4 :
+                            const cs = match.split('').splice(1,4);
+                            color = (cs.reduce((acc,item) => {
+                                acc+=(item.repeat(2));
+                                return acc;
+                            }))+'ff';
+                            break;
+                        case 7 :
+                            color = (match.replace('#',''))+'ff';
+                            break;
+                        case 9 :
+                            color = (match.replace('#',''));
+                            break;
+                        default :
+                            color = 'ffffffff';
+                    }
+                    const rgba = [parseInt(color.substr(0,2)), parseInt(color.substr(2,2)), parseInt(color.substr(4,2)), parseInt(color.substr(6,2))];
+                    return 'rgba('+rgba.join(',')+')';
+                }else if(name.substr(0,3) === 'rgb'){
+                    if(name.substr(3,1) === 'a')    return name;
+                    else                            return name.replace(/\((.*)\)/,'($1,1)').replace('rgb','rgba');
+                }else{
+                    const colors = {
+                        "black": "rgba(0,0,0,1)",
+                        "white": "rgba(255,255,255,1)",
+                        "red": "rgba(255,0,0,1)",
+                        "lime": "rgba(0,255,0,1)",
+                        "blue": "rgba(0,0,255,1)",
+                        "yellow": "rgba(255,255,0,1)",
+                        "cyan": "rgba(0,255,255,1)",
+                        "aqua": "rgba(0,255,255,1)",
+                        "magenta": "rgba(255,0,255,1)",
+                        "fuchsia": "rgba(255,0,255,1)",
+                        "silver": "rgba(192,192,192,1)",
+                        "gray": "rgba(128,128,128,1)",
+                        "maroon": "rgba(128,0,0,1)",
+                        "olive": "rgba(128,128,0,1)",
+                        "green": "rgba(0,128,0,1)",
+                        "purple": "rgba(128,0,128,1)",
+                        "teal": "rgba(0,128,128,1)",
+                        "navy": "rgba(0,0,128,1)",
+                        "darkred": "rgba(139,0,0,1)",
+                        "brown": "rgba(165,42,42,1)",
+                        "firebrick": "rgba(178,34,34,1)",
+                        "crimson": "rgba(220,20,60,1)",
+                        "tomato": "rgba(255,99,71,1)",
+                        "coral": "rgba(255,127,80,1)",
+                        "indianred": "rgba(205,92,92,1)",
+                        "lightcoral": "rgba(240,128,128,1)",
+                        "darksalmon": "rgba(233,150,122,1)",
+                        "salmon": "rgba(250,128,114,1)",
+                        "lightsalmon": "rgba(255,160,122,1)",
+                        "orangered": "rgba(255,69,0,1)",
+                        "darkorange": "rgba(255,140,0,1)",
+                        "orange": "rgba(255,165,0,1)",
+                        "gold": "rgba(255,215,0,1)",
+                        "darkgoldenrod": "rgba(184,134,11,1)",
+                        "goldenrod": "rgba(218,165,32,1)",
+                        "palegoldenrod": "rgba(238,232,170,1)",
+                        "darkkhaki": "rgba(189,183,107,1)",
+                        "khaki": "rgba(240,230,140,1)",
+                        "yellowgreen": "rgba(154,205,50,1)",
+                        "darkolivegreen": "rgba(85,107,47,1)",
+                        "olivedrab": "rgba(107,142,35,1)",
+                        "lawngreen": "rgba(124,252,0,1)",
+                        "chartreuse": "rgba(127,255,0,1)",
+                        "greenyellow": "rgba(173,255,47,1)",
+                        "darkgreen": "rgba(0,100,0,1)",
+                        "forestgreen": "rgba(34,139,34,1)",
+                        "limegreen": "rgba(50,205,50,1)",
+                        "lightgreen": "rgba(144,238,144,1)",
+                        "palegreen": "rgba(152,251,152,1)",
+                        "darkseagreen": "rgba(143,188,143,1)",
+                        "mediumspringgreen": "rgba(0,250,154,1)",
+                        "springgreen": "rgba(0,255,127,1)",
+                        "seagreen": "rgba(46,139,87,1)",
+                        "mediumaquamarine": "rgba(102,205,170,1)",
+                        "mediumseagreen": "rgba(60,179,113,1)",
+                        "lightseagreen": "rgba(32,178,170,1)",
+                        "darkslategray": "rgba(47,79,79,1)",
+                        "darkcyan": "rgba(0,139,139,1)",
+                        "lightcyan": "rgba(224,255,255,1)",
+                        "darkturquoise": "rgba(0,206,209,1)",
+                        "turquoise": "rgba(64,224,208,1)",
+                        "mediumturquoise": "rgba(72,209,204,1)",
+                        "paleturquoise": "rgba(175,238,238,1)",
+                        "aquamarine": "rgba(127,255,212,1)",
+                        "powderblue": "rgba(176,224,230,1)",
+                        "cadetblue": "rgba(95,158,160,1)",
+                        "steelblue": "rgba(70,130,180,1)",
+                        "cornflowerblue": "rgba(100,149,237,1)",
+                        "deepskyblue": "rgba(0,191,255,1)",
+                        "dodgerblue": "rgba(30,144,255,1)",
+                        "lightblue": "rgba(173,216,230,1)",
+                        "skyblue": "rgba(135,206,235,1)",
+                        "lightskyblue": "rgba(135,206,250,1)",
+                        "midnightblue": "rgba(25,25,112,1)",
+                        "darkblue": "rgba(0,0,139,1)",
+                        "mediumblue": "rgba(0,0,205,1)",
+                        "royalblue": "rgba(65,105,225,1)",
+                        "blueviolet": "rgba(138,43,226,1)",
+                        "indigo": "rgba(75,0,130,1)",
+                        "darkslateblue": "rgba(72,61,139,1)",
+                        "slateblue": "rgba(106,90,205,1)",
+                        "mediumslateblue": "rgba(123,104,238,1)",
+                        "mediumpurple": "rgba(147,112,219,1)",
+                        "darkmagenta": "rgba(139,0,139,1)",
+                        "darkviolet": "rgba(148,0,211,1)",
+                        "darkorchid": "rgba(153,50,204,1)",
+                        "mediumorchid": "rgba(186,85,211,1)",
+                        "thistle": "rgba(216,191,216,1)",
+                        "plum": "rgba(221,160,221,1)",
+                        "violet": "rgba(238,130,238,1)",
+                        "orchid": "rgba(218,112,214,1)",
+                        "mediumvioletred": "rgba(199,21,133,1)",
+                        "palevioletred": "rgba(219,112,147,1)",
+                        "deeppink": "rgba(255,20,147,1)",
+                        "hotpink": "rgba(255,105,180,1)",
+                        "lightpink": "rgba(255,182,193,1)",
+                        "pink": "rgba(255,192,203,1)",
+                        "antiquewhite": "rgba(250,235,215,1)",
+                        "beige": "rgba(245,245,220,1)",
+                        "bisque": "rgba(255,228,196,1)",
+                        "blanchedalmond": "rgba(255,235,205,1)",
+                        "wheat": "rgba(245,222,179,1)",
+                        "cornsilk": "rgba(255,248,220,1)",
+                        "lemonchiffon": "rgba(255,250,205,1)",
+                        "lightgoldenrodyellow": "rgba(250,250,210,1)",
+                        "lightyellow": "rgba(255,255,224,1)",
+                        "saddlebrown": "rgba(139,69,19,1)",
+                        "sienna": "rgba(160,82,45,1)",
+                        "chocolate": "rgba(210,105,30,1)",
+                        "peru": "rgba(205,133,63,1)",
+                        "sandybrown": "rgba(244,164,96,1)",
+                        "burlywood": "rgba(222,184,135,1)",
+                        "tan": "rgba(210,180,140,1)",
+                        "rosybrown": "rgba(188,143,143,1)",
+                        "moccasin": "rgba(255,228,181,1)",
+                        "navajowhite": "rgba(255,222,173,1)",
+                        "peachpuff": "rgba(255,218,185,1)",
+                        "mistyrose": "rgba(255,228,225,1)",
+                        "lavenderblush": "rgba(255,240,245,1)",
+                        "linen": "rgba(250,240,230,1)",
+                        "oldlace": "rgba(253,245,230,1)",
+                        "papayawhip": "rgba(255,239,213,1)",
+                        "seashell": "rgba(255,245,238,1)",
+                        "mintcream": "rgba(245,255,250,1)",
+                        "slategray": "rgba(112,128,144,1)",
+                        "lightslategray": "rgba(119,136,153,1)",
+                        "lightsteelblue": "rgba(176,196,222,1)",
+                        "lavender": "rgba(230,230,250,1)",
+                        "floralwhite": "rgba(255,250,240,1)",
+                        "aliceblue": "rgba(240,248,255,1)",
+                        "ghostwhite": "rgba(248,248,255,1)",
+                        "honeydew": "rgba(240,255,240,1)",
+                        "ivory": "rgba(255,255,240,1)",
+                        "azure": "rgba(240,255,255,1)",
+                        "snow": "rgba(255,250,250,1)",
+                        "dimgray": "rgba(105,105,105,1)",
+                        "dimgrey": "rgba(105,105,105,1)",
+                        "grey": "rgba(128,128,128,1)",
+                        "darkgray": "rgba(169,169,169,1)",
+                        "darkgrey": "rgba(169,169,169,1)",
+                        "lightgray": "rgba(211,211,211,1)",
+                        "lightgrey": "rgba(211,211,211,1)",
+                        "gainsboro": "rgba(220,220,220,1)",
+                        "whitesmoke": "rgba(245,245,245,1)"
+                    };
+                
+                    return colors[name] === undefined ? 'rgba(255,255,255,0.5)' : colors[name];
+                }
+            });
+
+            return str;
+
+            console.log(str);
+
+            if(name.substr(0,1) === '#'){
+                switch (name.length){
+                    case 4 :
+                        const cs = name.split('').splice(0,1);
+                        color = '#'+(cs.reduce((acc,item) => acc+=(item.repeat(2))))+'ff';
+                        break;
+                    case 7 :
+                        color = name+'ff';
+                        break;
+                    case 9 :
+                        color = name;
+                        break;
+                    default :
+                        color = '#ffffffff';
+                }
+                // console.log(color);
+            }else if(name.substr(0,3) === 'rgb'){
+                if(name.substr(3,4) === 'a')    return name;
+                else                            return name.replace(/\((.*)\)/,'($1,1)').replace('rgb','rgba');
+            }else{
+                const colors = {
+                    "black": "rgba(0,0,0,1)",
+                    "white": "rgba(255,255,255,1)",
+                    "red": "rgba(255,0,0,1)",
+                    "lime": "rgba(0,255,0,1)",
+                    "blue": "rgba(0,0,255,1)",
+                    "yellow": "rgba(255,255,0,1)",
+                    "cyan": "rgba(0,255,255,1)",
+                    "aqua": "rgba(0,255,255,1)",
+                    "magenta": "rgba(255,0,255,1)",
+                    "fuchsia": "rgba(255,0,255,1)",
+                    "silver": "rgba(192,192,192,1)",
+                    "gray": "rgba(128,128,128,1)",
+                    "maroon": "rgba(128,0,0,1)",
+                    "olive": "rgba(128,128,0,1)",
+                    "green": "rgba(0,128,0,1)",
+                    "purple": "rgba(128,0,128,1)",
+                    "teal": "rgba(0,128,128,1)",
+                    "navy": "rgba(0,0,128,1)",
+                    "darkred": "rgba(139,0,0,1)",
+                    "brown": "rgba(165,42,42,1)",
+                    "firebrick": "rgba(178,34,34,1)",
+                    "crimson": "rgba(220,20,60,1)",
+                    "tomato": "rgba(255,99,71,1)",
+                    "coral": "rgba(255,127,80,1)",
+                    "indianred": "rgba(205,92,92,1)",
+                    "lightcoral": "rgba(240,128,128,1)",
+                    "darksalmon": "rgba(233,150,122,1)",
+                    "salmon": "rgba(250,128,114,1)",
+                    "lightsalmon": "rgba(255,160,122,1)",
+                    "orangered": "rgba(255,69,0,1)",
+                    "darkorange": "rgba(255,140,0,1)",
+                    "orange": "rgba(255,165,0,1)",
+                    "gold": "rgba(255,215,0,1)",
+                    "darkgoldenrod": "rgba(184,134,11,1)",
+                    "goldenrod": "rgba(218,165,32,1)",
+                    "palegoldenrod": "rgba(238,232,170,1)",
+                    "darkkhaki": "rgba(189,183,107,1)",
+                    "khaki": "rgba(240,230,140,1)",
+                    "yellowgreen": "rgba(154,205,50,1)",
+                    "darkolivegreen": "rgba(85,107,47,1)",
+                    "olivedrab": "rgba(107,142,35,1)",
+                    "lawngreen": "rgba(124,252,0,1)",
+                    "chartreuse": "rgba(127,255,0,1)",
+                    "greenyellow": "rgba(173,255,47,1)",
+                    "darkgreen": "rgba(0,100,0,1)",
+                    "forestgreen": "rgba(34,139,34,1)",
+                    "limegreen": "rgba(50,205,50,1)",
+                    "lightgreen": "rgba(144,238,144,1)",
+                    "palegreen": "rgba(152,251,152,1)",
+                    "darkseagreen": "rgba(143,188,143,1)",
+                    "mediumspringgreen": "rgba(0,250,154,1)",
+                    "springgreen": "rgba(0,255,127,1)",
+                    "seagreen": "rgba(46,139,87,1)",
+                    "mediumaquamarine": "rgba(102,205,170,1)",
+                    "mediumseagreen": "rgba(60,179,113,1)",
+                    "lightseagreen": "rgba(32,178,170,1)",
+                    "darkslategray": "rgba(47,79,79,1)",
+                    "darkcyan": "rgba(0,139,139,1)",
+                    "lightcyan": "rgba(224,255,255,1)",
+                    "darkturquoise": "rgba(0,206,209,1)",
+                    "turquoise": "rgba(64,224,208,1)",
+                    "mediumturquoise": "rgba(72,209,204,1)",
+                    "paleturquoise": "rgba(175,238,238,1)",
+                    "aquamarine": "rgba(127,255,212,1)",
+                    "powderblue": "rgba(176,224,230,1)",
+                    "cadetblue": "rgba(95,158,160,1)",
+                    "steelblue": "rgba(70,130,180,1)",
+                    "cornflowerblue": "rgba(100,149,237,1)",
+                    "deepskyblue": "rgba(0,191,255,1)",
+                    "dodgerblue": "rgba(30,144,255,1)",
+                    "lightblue": "rgba(173,216,230,1)",
+                    "skyblue": "rgba(135,206,235,1)",
+                    "lightskyblue": "rgba(135,206,250,1)",
+                    "midnightblue": "rgba(25,25,112,1)",
+                    "darkblue": "rgba(0,0,139,1)",
+                    "mediumblue": "rgba(0,0,205,1)",
+                    "royalblue": "rgba(65,105,225,1)",
+                    "blueviolet": "rgba(138,43,226,1)",
+                    "indigo": "rgba(75,0,130,1)",
+                    "darkslateblue": "rgba(72,61,139,1)",
+                    "slateblue": "rgba(106,90,205,1)",
+                    "mediumslateblue": "rgba(123,104,238,1)",
+                    "mediumpurple": "rgba(147,112,219,1)",
+                    "darkmagenta": "rgba(139,0,139,1)",
+                    "darkviolet": "rgba(148,0,211,1)",
+                    "darkorchid": "rgba(153,50,204,1)",
+                    "mediumorchid": "rgba(186,85,211,1)",
+                    "thistle": "rgba(216,191,216,1)",
+                    "plum": "rgba(221,160,221,1)",
+                    "violet": "rgba(238,130,238,1)",
+                    "orchid": "rgba(218,112,214,1)",
+                    "mediumvioletred": "rgba(199,21,133,1)",
+                    "palevioletred": "rgba(219,112,147,1)",
+                    "deeppink": "rgba(255,20,147,1)",
+                    "hotpink": "rgba(255,105,180,1)",
+                    "lightpink": "rgba(255,182,193,1)",
+                    "pink": "rgba(255,192,203,1)",
+                    "antiquewhite": "rgba(250,235,215,1)",
+                    "beige": "rgba(245,245,220,1)",
+                    "bisque": "rgba(255,228,196,1)",
+                    "blanchedalmond": "rgba(255,235,205,1)",
+                    "wheat": "rgba(245,222,179,1)",
+                    "cornsilk": "rgba(255,248,220,1)",
+                    "lemonchiffon": "rgba(255,250,205,1)",
+                    "lightgoldenrodyellow": "rgba(250,250,210,1)",
+                    "lightyellow": "rgba(255,255,224,1)",
+                    "saddlebrown": "rgba(139,69,19,1)",
+                    "sienna": "rgba(160,82,45,1)",
+                    "chocolate": "rgba(210,105,30,1)",
+                    "peru": "rgba(205,133,63,1)",
+                    "sandybrown": "rgba(244,164,96,1)",
+                    "burlywood": "rgba(222,184,135,1)",
+                    "tan": "rgba(210,180,140,1)",
+                    "rosybrown": "rgba(188,143,143,1)",
+                    "moccasin": "rgba(255,228,181,1)",
+                    "navajowhite": "rgba(255,222,173,1)",
+                    "peachpuff": "rgba(255,218,185,1)",
+                    "mistyrose": "rgba(255,228,225,1)",
+                    "lavenderblush": "rgba(255,240,245,1)",
+                    "linen": "rgba(250,240,230,1)",
+                    "oldlace": "rgba(253,245,230,1)",
+                    "papayawhip": "rgba(255,239,213,1)",
+                    "seashell": "rgba(255,245,238,1)",
+                    "mintcream": "rgba(245,255,250,1)",
+                    "slategray": "rgba(112,128,144,1)",
+                    "lightslategray": "rgba(119,136,153,1)",
+                    "lightsteelblue": "rgba(176,196,222,1)",
+                    "lavender": "rgba(230,230,250,1)",
+                    "floralwhite": "rgba(255,250,240,1)",
+                    "aliceblue": "rgba(240,248,255,1)",
+                    "ghostwhite": "rgba(248,248,255,1)",
+                    "honeydew": "rgba(240,255,240,1)",
+                    "ivory": "rgba(255,255,240,1)",
+                    "azure": "rgba(240,255,255,1)",
+                    "snow": "rgba(255,250,250,1)",
+                    "dimgray": "rgba(105,105,105,1)",
+                    "dimgrey": "rgba(105,105,105,1)",
+                    "grey": "rgba(128,128,128,1)",
+                    "darkgray": "rgba(169,169,169,1)",
+                    "darkgrey": "rgba(169,169,169,1)",
+                    "lightgray": "rgba(211,211,211,1)",
+                    "lightgrey": "rgba(211,211,211,1)",
+                    "gainsboro": "rgba(220,220,220,1)",
+                    "whitesmoke": "rgba(245,245,245,1)"
+                };
+            
+                return colors[name] === undefined ? 'rgba(255,255,255,0.5)' : colors[name];
+            }
         }
     }
     window.ScrollAnimation = ScrollAnimation;

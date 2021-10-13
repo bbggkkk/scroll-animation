@@ -43,6 +43,20 @@
         
 
         /* Define Animation  */
+        @keyframes title {
+            0% {
+                color:white;
+                background:rgba(0,0,0,1);
+            }
+            50% {
+                background:rgba(0,0,0,1);
+            }
+            100% {
+                background:rgba(0,0,0,0);
+                color:black;
+            }
+        }
+
         @keyframes profile {
             from {
                 background:#ffc72c;
@@ -66,7 +80,7 @@
 </head>
 <body>
 
-    <h1>Scroll Animation</h1>
+    <h1     id="title">Scroll Animation</h1>
     <div    class="box"></div>
     <!-- Yellow Box -->
 
