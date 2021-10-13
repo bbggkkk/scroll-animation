@@ -109,7 +109,7 @@
                 const val = $parse.reduce((acc, item) => {
                     acc = acc.replace(item[0],item[1]);
                     return acc;
-                },""+string);
+                },''+string);
                 return val
             }
 
