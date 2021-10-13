@@ -46,8 +46,14 @@
                     if(this.element.style.willChange === 'auto'){
                         this.element.style.willChange = this.props.join(',');
                     }
-        
+    
+
                     this.prevScroll = Y;
+                    // console.log(this.animation, Y, this.animation[0]);
+                    console.log(this.animation[Y]);
+                    if(this.animation[Y] === undefined){
+                        this.animation[Y] = this.s_fillUndefined(this.animation[Y], this.element, this.animationMap, this.aniMapKeys, Y, this.props);
+                    }
                     if(this.animation[Y] !== undefined){
                         const keys = this.props;
                         keys.forEach(item => {
@@ -76,7 +82,8 @@
             
             this.aniMapKeys   = Object.keys(this.animationMap);
             this.binMap       = this.createAnimationKeyframe(this.animationMap,this.scrollStart,this.scrollEnd);
-            this.animation    = this.a_fillUndefined(this.binMap,this.element,this.animationMap,this.aniMapKeys);
+            this.animation    = {};
+            // this.animation    = this.a_fillUndefined(this.binMap,this.element,this.animationMap,this.aniMapKeys);
 
             this.scrolling = false;
             this.element.style.willChange = 'auto';
@@ -228,6 +235,37 @@
             }
             return this.findNextValue(props, element, value, idx+1);
         }
+        s_fillUndefined(props, element, animationMap, map, idx, $props){
+            const origin = map;
+            const ele    = element;
+
+            const val = $props.reduce((acc,key) => {
+                const [prev, prevKey] = this.a_findPrevValue(origin, ele, key, idx, animationMap, map);
+                const [next, nextKey] = this.a_findNextValue(origin, ele, key, idx, animationMap, map);
+                const [prevNum, nextNum] = [parseInt(prevKey), parseInt(nextKey)];
+                const diff = nextNum - prevNum;
+
+                if(parseInt(idx) === 0){
+                    acc[key] = prev;
+                }else if(parseInt(idx) === Object.keys(acc).length-1){
+                    acc[key] = next;
+                }else{
+                    const pn = prev.match(/\-?\d{0,}\.?\d+/g).map(item => +item);
+                    const nn = next.match(/\-?\d{0,}\.?\d+/g).map(item => +item);
+
+                    let cnt    = 0;
+                    acc[key] = next.replace(/\-?\d{0,}\.?\d+/g,(match, $idx) => {
+                        const dif = pn[cnt] + ((nn[cnt]-pn[cnt])*(parseInt(idx)-prevNum)/diff);
+                        cnt++;
+                        return parseFloat(dif.toFixed(2));
+                    });
+                }
+                return acc
+            },{});
+            // console.log(val);
+            return val;
+
+        }
         a_fillUndefined(props, element, animationMap, map){
             const origin = props;
             const ele    = element;
@@ -260,7 +298,7 @@
         }
         a_findPrevValue(props,element,value,idx,animationMap,map){
             for(let i=map.length-1; i>=0; i--){
-                if(idx >= map[i]){
+                if(idx > map[i]){
                     if(animationMap[map[i]][value] !== undefined){
                         return [animationMap[map[i]][value], map[i]];
                     }else{
@@ -270,10 +308,11 @@
                     continue;
                 }
             }
+            return [animationMap[map[0]][value], map[0]];
         }
         a_findNextValue(props,element,value,idx,animationMap,map){
             for(let i=0; i<map.length; i++){
-                if(idx <= map[i]){
+                if(idx < map[i]){
                     if(animationMap[map[i]][value] !== undefined){
                         return [animationMap[map[i]][value], map[i]];
                     }else{
@@ -283,9 +322,11 @@
                     continue;
                 }
             }
+            return [animationMap[map[props.length-1]][value], map[props.length-1]];
         }
     
         hasUndefined(frame){
+            if(frame === undefined) return undefined;
             const undf = Object.keys(frame).filter(item => {
                 return frame[item] === undefined;
             });
