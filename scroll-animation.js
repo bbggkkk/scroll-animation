@@ -22,6 +22,18 @@
     
             this.scrollTarget.addEventListener('scroll', this.goToAndStop.bind(this), { passive:true });
             this.goToAndStop();
+
+
+            setTimeout(() => {
+                for(let i=0; i<=this.scrollEnd; i++){
+                    if(this.animation[i] === undefined){
+                        setTimeout(() => {
+                            this.animation[i] = this.s_fillUndefined(this.animation[i], this.element, this.animationMap, this.aniMapKeys, i, this.props);
+                        },0);
+                    }
+                }
+            },0);
+
         }
         goToAndStop(keyframe){
             if(this.scrolling)  return;
@@ -72,8 +84,8 @@
         }
         init(){
             this.prevScroll   = undefined;
-            this.scrollStart  = this.dataScrollStart !== null ? +this.isEval(this.dataScrollStart) : this.body.offsetTop;
-            this.scrollEnd    = this.dataScrollEnd !== null ? +this.isEval(this.dataScrollEnd) : this.body.offsetTop + this.body.scrollHeight - this.body.offsetHeight;
+            this.scrollStart  = this.dataScrollStart !== null ? Math.round(+this.isEval(this.dataScrollStart)) : Math.round(this.body.offsetTop);
+            this.scrollEnd    = this.dataScrollEnd !== null ? Math.round(+this.isEval(this.dataScrollEnd)) : Math.round(this.body.offsetTop + this.body.scrollHeight - this.body.offsetHeight);
             this.scrollDiff   = this.scrollEnd - this.scrollStart;
     
     
