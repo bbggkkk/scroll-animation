@@ -19,7 +19,7 @@
 (function(){
     const element   = document.querySelector('#title');
     const start     = 0;
-    const end       = () => document.documentElement.scrollHeight - document.documentElement.offsetHeight;
+    const end       = () => (document.documentElement.scrollHeight - document.documentElement.offsetHeight)/2;
     const animation = 'title';
     
     element.scrollElement = new ScrollAnimation(element,window,animation,start,end);
