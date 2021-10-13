@@ -67,5 +67,5 @@ const animation = new ScrollAnimation(element, scrollTarget, animation, start, e
     - 좋지 않은 예시)
     ```css
     0%   { transform:scale(calc(50vw + 50%)); }
-    100% { transform:scale(calc(0vw + 50%));   }
+    100% { transform:scale(calc(0% + 0vw));   }
     ```
