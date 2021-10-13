@@ -98,6 +98,9 @@
 
         isEval(string){
 
+            if(typeof string === 'function') {
+                return string();
+            }
             const parseCode = (string) => {
                 const $parse = [
                     [new RegExp('#\\(this\\)','g'),'_this.body'],
