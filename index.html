@@ -33,12 +33,18 @@
         .box {
             width:min(80vw,320px);
             height:min(80vw,320px);
-            background:blue;
             box-shadow:0 16px 32px rgba(0,0,0,0.1);
             border-radius:min(10vw,48px);
             position:fixed;
             top:50%;
             left:50%;
+            overflow:hidden;
+        }
+        .box > p {
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
         }
         
 
@@ -73,7 +79,21 @@
                 transform:translate(0%,-100%) scale(0.75);
             }
             to {
+                background:rgb(0,0,255);
                 transform:translate(0%,0%) scale(1);
+            }
+        }
+        @keyframes hello {
+            from {
+                font-size:20vw;
+                color:black;
+            }
+            50% {
+                color:white;
+            }
+            100% {
+                font-size:40vw;
+                color:white;
             }
         }
     </style>
@@ -81,7 +101,9 @@
 <body>
 
     <h1     id="title">Scroll Animation</h1>
-    <div    class="box"></div>
+    <div    class="box">
+        <p>HI</p>
+    </div>
     <!-- Yellow Box -->
 
     <div    style="height:400vh;"></div>

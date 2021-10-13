@@ -4,8 +4,16 @@
     const end       = () => document.documentElement.scrollHeight - document.documentElement.offsetHeight;
     const animation = 'profile';
     
-    window.scrollElement = new ScrollAnimation(element,window,animation,start,end);
-    console.log(window.scrollElement);
+    element.scrollElement = new ScrollAnimation(element,window,animation,start,end);
+    console.log(element.scrollElement);
+})();
+(function(){
+    const element   = document.querySelector('.box > p');
+    const start     = 0;
+    const end       = () => document.documentElement.scrollHeight - document.documentElement.offsetHeight;
+    const animation = 'hello';
+    
+    element.scrollElement = new ScrollAnimation(element,window,animation,start,end);
 })();
 
 (function(){
