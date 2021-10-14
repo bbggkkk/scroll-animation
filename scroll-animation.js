@@ -14,10 +14,7 @@
             this.props          = this.getAnimationProps(this.animationCss);
             
             // this.init();
-            this.resizeObserver = new ResizeObserver(this.init.bind(this));
-            this.resizeObserver.observe(this.body);
-    
-            this.scrollTarget.addEventListener('scroll', this.goToAndStop.bind(this), { passive:true });
+            this.load();
 
 
             setTimeout(() => {
@@ -30,6 +27,18 @@
                 }
             },0);
 
+        }
+        load() {
+            this.resizeObserver = new ResizeObserver(this.init.bind(this));
+            this.resizeObserver.observe(this.body);
+            this.scrollTarget.addEventListener('scroll', this.goToAndStopWrap, { passive:true });
+        }
+        unload(){
+            this.resizeObserver.unobserve(this.body);
+            this.scrollTarget.removeEventListener('scroll',this.goToAndStopWrap);
+        }
+        goToAndStopWrap = () => {
+            this.goToAndStop();
         }
         goToAndStop(keyframe){
             if(this.scrolling)  return;
