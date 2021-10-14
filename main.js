@@ -5,7 +5,7 @@
     const animation = 'profile';
     
     element.scrollElement = new ScrollAnimation(element,window,animation,start,end);
-    console.log(element.scrollElement);
+    // console.log(element.scrollElement);
 })();
 (function(){
     const element   = document.querySelector('.box > p');
@@ -14,6 +14,7 @@
     const animation = 'hello';
     
     element.scrollElement = new ScrollAnimation(element,window,animation,start,end);
+    // console.log(element.scrollElement);
 })();
 
 (function(){
@@ -23,4 +24,5 @@
     const animation = 'title';
     
     element.scrollElement = new ScrollAnimation(element,window,animation,start,end);
+    console.log(element.scrollElement);
 })();

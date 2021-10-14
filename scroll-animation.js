@@ -398,9 +398,9 @@
                     }
                     const rgba = [parseInt(color.substr(0,2)), parseInt(color.substr(2,2)), parseInt(color.substr(4,2)), parseInt(color.substr(6,2))];
                     return 'rgba('+rgba.join(',')+')';
-                }else if(name.substr(0,3) === 'rgb'){
-                    if(name.substr(3,1) === 'a')    return name;
-                    else                            return name.replace(/\((.*)\)/,'($1,1)').replace('rgb','rgba');
+                }else if(match.substr(0,3) === 'rgb'){
+                    if(match.substr(3,1) === 'a')   return match;
+                    else                            return match.replace(/\((.*?)\)/,'($1,1)').replace('rgb','rgba');
                 }else{
                     const colors = {
                         "black": "rgba(0,0,0,1)",
@@ -548,7 +548,6 @@
                         "gainsboro": "rgba(220,220,220,1)",
                         "whitesmoke": "rgba(245,245,245,1)"
                     };
-                
                     return colors[name] === undefined ? 'rgba(255,255,255,0.5)' : colors[name];
                 }
             });
