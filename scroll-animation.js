@@ -38,48 +38,47 @@
             this.scrollTarget.removeEventListener('scroll',this.goToAndStopWrap);
         }
         goToAndStopWrap = () => {
-            this.goToAndStop();
+
+            requestAnimationFrame(() => {
+                this.goToAndStop();
+            });
         }
         goToAndStop(keyframe){
             if(this.scrolling)  return;
             this.scrolling = true;
-            requestAnimationFrame(
-                () => {
 
-                    let Y = Math.round(this.body.scrollTop);
-                    if(keyframe !== undefined && typeof keyframe === 'number')  Y = keyframe;
+            let Y = Math.round(this.body.scrollTop);
+            if(keyframe !== undefined && typeof keyframe === 'number')  Y = keyframe;
 
-                    if(Y < this.scrollStart)    Y = this.scrollStart;
-                    if(Y > this.scrollEnd)      Y = this.scrollEnd;
-                    Y = Y - this.scrollStart;
-                    if(this.prevScroll === Y) {
-                        this.element.style.willChange = 'auto';
-                        this.scrolling = false;
-                        return;
-                    }
+            if(Y < this.scrollStart)    Y = this.scrollStart;
+            if(Y > this.scrollEnd)      Y = this.scrollEnd;
+            Y = Y - this.scrollStart;
+            if(this.prevScroll === Y) {
+                this.element.style.willChange = 'auto';
+                this.scrolling = false;
+                return;
+            }
 
-                    // console.time('scroll');
-                    if(this.element.style.willChange === 'auto'){
-                        this.element.style.willChange = this.props.join(',');
-                    }
-    
+            // console.time('scroll');
+            if(this.element.style.willChange === 'auto'){
+                this.element.style.willChange = this.props.join(',');
+            }
 
-                    this.prevScroll = Y;
-                    if(this.animation[Y] === undefined){
-                        this.animation[Y] = this.fillUndefinedSingle(this.animation[Y], this.element, this.animationMap, this.aniMapKeys, Y, this.props);
-                    }
-                    if(this.animation[Y] !== undefined){
-                        const keys = this.props;
-                        keys.forEach(item => {
-                            this.element.style[item] = this.animation[Y][item];
-                        });
-                    }
 
-                    // console.timeEnd('scroll');
+            this.prevScroll = Y;
+            if(this.animation[Y] === undefined){
+                this.animation[Y] = this.fillUndefinedSingle(this.animation[Y], this.element, this.animationMap, this.aniMapKeys, Y, this.props);
+            }
+            if(this.animation[Y] !== undefined){
+                const keys = this.props;
+                keys.forEach(item => {
+                    this.element.style[item] = this.animation[Y][item];
+                });
+            }
 
-                    this.scrolling = false;
-                }
-            );
+            // console.timeEnd('scroll');
+
+            this.scrolling = false;
         }
         goToAndPlay(keyframe){
             this.goToAndStop(keyframe);
