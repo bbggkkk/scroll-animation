@@ -8,7 +8,6 @@
 
         }
         onload(element, scrollTarget, animationName, start, end) {
-            console.log('hi');
             this.element        = element;
             this.scrollTarget   = scrollTarget;
             this.animationName  = animationName;
