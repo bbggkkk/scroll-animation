@@ -1,4 +1,4 @@
-import { colors, colorReg } from './colorMap.js';
+import { colors, colorReg } from './colorMap';
 
 interface option {
     fnKeys?:fnKeys,
@@ -23,7 +23,7 @@ export const createKeyframes = (animation:animation, length:number, option?:opti
     const animationKeys = Object.keys(animation);   //키프레임 목록
     
     const {fnKeys, colorKeys}:option
-                        = option === undefined || option.fnKeys === undefined || option.colorKeys === undefined
+                        = option === undefined
                         ? findSpcKeys(animation, option)
                         : option;
                         //option에 함수밸류를 가진 속성을 명시하지 않으면, 자동으로 찾습니다.
@@ -43,11 +43,13 @@ export const createKeyframes = (animation:animation, length:number, option?:opti
         });
     });
     //색깔 변경
+
     console.log(animation);
     return [];
 };
 
 export const findSpcKeys = (animation:animation, {fnKeys, colorKeys}:option):option => {
+    //색깔 속성을 가진 키프레임과 함수 속성을 가진 키프레임을 찾아냅니다.
     const result = Object.keys(animation).reduce((acc:option, item:string) => {
         const thisAnimation = animation[item];
 
@@ -63,11 +65,13 @@ export const findSpcKeys = (animation:animation, {fnKeys, colorKeys}:option):opt
     return result;
 }
 export const findFnKeys = (animationValue:animationValue) => {
+    //함수 속성을 가진 키프레임을 반환합니다.
     return Object.keys(animationValue).filter($item => {
         return typeof animationValue[$item] === 'function';
     });
 }
 export const findColorKeys = (animationValue:animationValue) => {
+    //색깔 속성을 가진 키프레임을 반환합니다.
     return Object.keys(animationValue).filter($item => {
         return typeof animationValue[$item] === 'string' && (animationValue[$item] as string).match(colorReg).length > 0;
     });
