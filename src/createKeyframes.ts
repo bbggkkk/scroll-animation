@@ -19,7 +19,7 @@ interface animationValue {
     [index:string] : number|string|Function
 }
 
-export const createKeyframes = async (animation:animation, length:number, option?:option):Promise<any[]> => {
+export const createKeyframes = (animation:animation, length:number, option?:option):Array<any> => {
     const {fnKeys, colorKeys}:option
                         = option === undefined || option.fnKeys === undefined || option.colorKeys === undefined
                         ? findSpcKeys(animation)
@@ -164,10 +164,12 @@ export const findColorKeys = (animationValue:animationValue):Array<string> => {
             '100' : [ 'color' ]
         }
     };
-    const [updator, getKeyframe] = await createKeyframes(animation, 50, op);
+    const [updator, getKeyframe] = createKeyframes(animation, 50, op);
     window.addEventListener('resize', () => {
         requestAnimationFrame(async () => {
+            console.time('Test');
             const val = await updator();
+            console.timeEnd('Test');
             console.log(val);
         });
     });
