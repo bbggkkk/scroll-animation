@@ -4,9 +4,9 @@
       "noEmitOnError": true,
       "removeComments": false,
       "sourceMap": true,
-      "target": "es5",
+      "target": "es6",
       "outDir": "dist",
-      // "module":"es6"
+      "module":"es2020"
     },
     "include": [
       "src/*"

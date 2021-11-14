@@ -350,6 +350,7 @@
             });
         }
         getAnimationProps(animation){
+            console.log(animation);
             const ani = [...animation];
             return [...new Set(ani.map(item => this.getKeyframeProps(item)).flat())];
         }
