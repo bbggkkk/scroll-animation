@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "global": "^4.4.0",
+    "tsc": "^2.0.3"
+  },
+  "devDependencies": {
+    "tsc-watch": "^4.5.0"
+  }
+}
