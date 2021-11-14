@@ -84,7 +84,7 @@ export const colorRGBLize = ($color:string) => {
                 case 4 :
                     const cs = match.split('').splice(1,4);
                     color = (cs.reduce((acc,item) => {
-                        acc+=(item.repeat(2));
+                        acc+=(item+item);
                         return acc;
                     },''))+'ff';
                     break;
