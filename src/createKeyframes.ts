@@ -145,7 +145,7 @@ export const findColorKeys = (animationValue:animationValue):Array<string> => {
             color:'#f2f2f2'
         },
         '50'  : {
-            background:'blue'
+            color:'blue'
         },
         '100' : {
             opacity:1,
@@ -160,7 +160,7 @@ export const findColorKeys = (animationValue:animationValue):Array<string> => {
         }
         ,colorKeys : {
             '0'   : [ 'color' ],
-            '50'  : [ 'background' ],
+            '50'  : [ 'color' ],
             '100' : [ 'color' ]
         }
     };
