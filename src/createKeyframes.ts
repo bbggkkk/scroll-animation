@@ -19,21 +19,22 @@ interface animationValue {
     [index:string] : number|string|Function
 }
 
-export const createKeyframes = (animation:animation, length:number, option?:option):Array<any> => {
+export const createKeyframes = (animation:animation, length:number|Function, option?:option):Array<any> => {
     const {fnKeys, colorKeys}:option
                         = option === undefined || option.fnKeys === undefined || option.colorKeys === undefined
                         ? findSpcKeys(animation)
                         : option;
                         //option에 함수밸류를 가진 속성을 명시하지 않으면, 자동으로 찾습니다.
-                        
+    
     const updator = updateAnimation(animation, length, fnKeys, colorKeys);
-    const getKeyframe = '';
-    return [updator, getKeyframe]; //애니메이션 키프레임, 키프레임 재생성 함수, 특정 프레임 불러오는 함수 반환
+    const getKeyframor = getKeyframe(animation, length, fnKeys, colorKeys);
+    return [updator, getKeyframor]; //애니메이션 키프레임, 키프레임 재생성 함수, 특정 프레임 불러오는 함수 반환
 };
 
-export const updateAnimation = (animation:animation, length:number, fnKeys:fnKeys, colorKeys:colorKeys):Function => {
+export const updateAnimation = (animation:animation, length:number|Function, fnKeys:fnKeys, colorKeys:colorKeys):Function => {
     //애니메이션 키프레임을 재생성합니다.
     return () => {
+        const lng = typeof length === 'function' ? length() : length;
         // const settedAnimation = ;
         const worker = new Worker(new URL('./animation.worker.ts', import.meta.url));
         const promise = new Promise((res, rej) => {
@@ -43,15 +44,30 @@ export const updateAnimation = (animation:animation, length:number, fnKeys:fnKey
         });
         worker.postMessage({
             animation:setDefaultAnimation(animation, fnKeys, colorKeys),
-            length:length,
-            fnKeys:fnKeys,
-            colorKeys:colorKeys
+            length:lng
         });
         return promise;
         // return settedAnimation;
     }
 }
-
+export const getKeyframe = (animation:animation, length:number|Function, fnKeys:fnKeys, colorKeys:colorKeys) => {
+    return (idx:number) => {
+        const lng = typeof length === 'function' ? length() : length;
+        // const settedAnimation = ;
+        const worker = new Worker(new URL('./animation.worker.ts', import.meta.url));
+        const promise = new Promise((res, rej) => {
+            worker.onmessage = ({data}) => {
+                res(data);
+            }
+        });
+        worker.postMessage({
+            animation:setDefaultAnimation(animation, fnKeys, colorKeys),
+            length:lng,
+            idx:idx
+        });
+        return promise;
+    }
+}
 
 const setDefaultAnimation = (animation:animation, fnKeys:fnKeys, colorKeys:colorKeys):animation => {
     //초기 함수 실행 후 값 변환, 색깔코드 변환
@@ -94,7 +110,7 @@ export const colorRGBLize = ($color:string):string => {
                 default :
                     color = 'ffffffff';
             }
-            const rgba = [parseInt(color.substring(0,2), 16), parseInt(color.substring(2,4), 16), parseInt(color.substring(4,6), 16), parseInt(color.substring(6,8), 16)];
+            const rgba = [parseInt(color.substring(0,2), 16), parseInt(color.substring(2,4), 16), parseInt(color.substring(4,6), 16), (parseInt(color.substring(6,8), 16)/255)];
             return 'rgba('+rgba.join(',')+')';
         }else if(match.substring(0,3) === 'rgb'){
             if(match.substring(3,4) === 'a')   return match;
@@ -132,48 +148,8 @@ export const findFnKeys = (animationValue:animationValue):Array<string> => {
 export const findColorKeys = (animationValue:animationValue):Array<string> => {
     //색깔 속성을 가진 키프레임을 반환합니다.
     return Object.keys(animationValue).filter($item => {
-        return typeof animationValue[$item] === 'string' && (animationValue[$item] as string).match(colorReg).length > 0;
+        return typeof animationValue[$item] === 'string' && String(animationValue[$item]).match(colorReg) !== null;
     });
 }
-
-
-(async () => {
-    const animation = {
-        '0' : {
-            opacity:0,
-            transform:() => `translate(${window.innerWidth}px, -50%)`,
-            color:'#f2f2f2'
-        },
-        '50'  : {
-            color:'blue'
-        },
-        '100' : {
-            opacity:1,
-            transform:() => `translate(${0}px, 0%)`,
-            color:'#1a1a1a'
-        }
-    }
-    const op = {
-        fnKeys : {
-            '0'   : [ 'transform' ],
-            '100' : [ 'transform' ]
-        }
-        ,colorKeys : {
-            '0'   : [ 'color' ],
-            '50'  : [ 'color' ],
-            '100' : [ 'color' ]
-        }
-    };
-    const [updator, getKeyframe] = createKeyframes(animation, 50, op);
-    window.addEventListener('resize', () => {
-        requestAnimationFrame(async () => {
-            // console.time('Test');
-            const val = await updator();
-            // console.timeEnd('Test');
-            console.log(val);
-        });
-    });
-})();
-
 
 // .match(/[^)^\s]*\(.*?\)/g)

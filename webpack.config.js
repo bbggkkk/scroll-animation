@@ -1,7 +1,7 @@
 var path = require("path");
  
 module.exports = {
-  entry: "./src/createKeyframes.ts",
+  entry: "./src/index.ts",
   module: {
     rules: [
       {
