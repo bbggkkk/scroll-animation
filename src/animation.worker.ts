@@ -54,15 +54,53 @@ const fillUndefinedProp = (animation:animation, baseProp:animationValue, baseKey
     },{});
 }
 
-const fillProps = (animation:animation, animationKeyframe:Array<animationValue>, keyframeKeys:Array<string>, props:Array<string>) => {
-    // findPrevNext(animation, 20, keyframeKeys);
+const fillProps = (animation:animation, animationKeyframe:Array<animationValue>, keyframeKeys:Array<string>, baseKeyframe:Array<number>, props:Array<string>):Array<animationValue> => {
+
+    const result = animationKeyframe.map((item:animationValue, idx:number) => {
+        if(item[props[0]] !== undefined)    {
+            return item;
+        }
+
+        const [pk, nk] = findPrevNext(animation, idx, keyframeKeys, baseKeyframe);
+        const pr       = animationKeyframe[pk],
+              nr       = animationKeyframe[nk];
+        const row = props.reduce((acc:animationValue, $item:string) => {
+            const pv   = pr[$item],
+                  nv   = nr[$item];
+
+            const pn   = String(pv).match(numeric).map(item => Number(item)),
+                  nn   = String(nv).match(numeric).map(item => Number(item));
+
+            const dv   = nn.map(($nv, $idx) => {
+                return parseFloat((pn[$idx] + (($nv - pn[$idx]) / (nk - pk) * (idx - pk))).toFixed(3));
+            });
+
+            let cnt = 0;
+            const av = String(nv).replace(numeric, () => {
+                const returnValue = dv[cnt];
+                cnt++;
+                return String(returnValue);
+            });
+            acc[$item] = isNaN(Number(av)) ? av : Number(av);
+
+            return acc;
+        }, {});
+        
+        return row;
+    });
+    // console.log(result);
+
+    return result;
 }
-// const findPrevNext = (animation:animation, idx:number, keyframeKeys:Array<string>) => {
 
-//     keyframeKeys.some((item, idx) => {
+const findPrevNext = (animation:animation, idx:number, keyframeKeys:Array<string>, baseKeyframe:Array<number>) => {
+    const nk = baseKeyframe.findIndex((item, $idx) => {
+        return Number(item) > idx;
+    });
+    const pk = nk - 1;
 
-//     });
-// }
+    return [baseKeyframe[pk], baseKeyframe[nk]];
+}
 
 
 const findPrev = (animation:animation, idx:number, prop:string, keyframeKeys:Array<string>) => {
@@ -99,14 +137,13 @@ onmessage = ({data}) => {
         return acc;
     },{});
     
-    const animationKeyframe = new Array(length).fill(baseProp);
+    let animationKeyframe = new Array(length).fill(baseProp);
 
     const undefinedAnimation = fillUndefinedProp(animation, baseProp, baseKeyframe, keyframeKeys, props);
     keyframeKeys.forEach((item, idx) => {
         animationKeyframe[baseKeyframe[idx]] = undefinedAnimation[item];
     });
-    fillProps(animation, animationKeyframe, keyframeKeys, props)
-    // console.log(animationKeyframe);
+    animationKeyframe = fillProps(animation, animationKeyframe, keyframeKeys, baseKeyframe, props);
 
     postMessage(animationKeyframe);
     // close();

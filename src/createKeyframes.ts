@@ -167,9 +167,9 @@ export const findColorKeys = (animationValue:animationValue):Array<string> => {
     const [updator, getKeyframe] = createKeyframes(animation, 50, op);
     window.addEventListener('resize', () => {
         requestAnimationFrame(async () => {
-            console.time('Test');
+            // console.time('Test');
             const val = await updator();
-            console.timeEnd('Test');
+            // console.timeEnd('Test');
             console.log(val);
         });
     });
