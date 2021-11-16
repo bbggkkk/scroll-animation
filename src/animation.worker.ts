@@ -38,8 +38,9 @@ const fillUndefinedProp = (animation:animation, baseKeyframe:Array<number>, keyf
 
                 const prevMatch = String(pa).match(numeric);
                 const dval = String(na).match(numeric).map(($$item, $$idx) => {
-                    return parseFloat((parseInt(prevMatch[$$idx]) + ((parseInt($$item) - parseInt(prevMatch[$$idx]))/((baseKeyframe[nv] - baseKeyframe[pv])/baseKeyframe[idx]))).toFixed(3));
+                    return parseFloat((parseFloat(prevMatch[$$idx]) + ((parseFloat($$item) - parseFloat(prevMatch[$$idx]))/((baseKeyframe[nv] - baseKeyframe[pv])/baseKeyframe[idx]))).toFixed(3));
                 })
+
                 let cnt = 0;
                 const aval = String(na).replace(numeric, () => {
                     const returnValue = dval[cnt];
@@ -152,7 +153,7 @@ onmessage = ({data}) => {
     }else{        
         postMessage(fillOneProp(animation, animationKeyframe, keyframeKeys, baseKeyframe, props, idx));
     }
-    close();
+    // close();
 }
 
 export default null as any;

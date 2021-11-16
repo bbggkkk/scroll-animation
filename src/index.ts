@@ -36,6 +36,7 @@ const [updator2, getKeyframe2] = createKeyframes(animation, 1000, op);
 
 updator2().then(data => {
     // play(box, data);
+    console.log(data);
     const range = document.querySelector('input');
     range.setAttribute('max', String(data.length - 1));
     range.addEventListener('input', (e) => {
