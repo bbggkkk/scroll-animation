@@ -78,7 +78,6 @@ const fillOneProp = (animationValue:animationValue, animationKeyframe:Array<anim
 
         const pn   = String(pv).match(numeric).map($$item => Number($$item)),
               nn   = String(nv).match(numeric).map($$item => Number($$item));
-
         const dv   = nn.map(($nv, $idx) => {
             return parseFloat((pn[$idx] + (($nv - pn[$idx]) / (nk - pk) * (idx - pk))).toFixed(3));
         });
@@ -153,5 +152,7 @@ onmessage = ({data}) => {
     }else{        
         postMessage(fillOneProp(animation, animationKeyframe, keyframeKeys, baseKeyframe, props, idx));
     }
-    // close();
+    close();
 }
+
+export default null as any;

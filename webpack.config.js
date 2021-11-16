@@ -5,14 +5,14 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.worker\.js$|\.worker\.ts$/,
+        use: { loader: "worker-loader" },
+      },
+      {
         test: /\.tsx?$/,
         use: "ts-loader",
         exclude: /node_modules/,
       },
-      // {
-      //   test: /\.worker\.js$/,
-      //   use: { loader: "worker-loader" },
-      // },
     ],
   },
   resolve: {
@@ -23,6 +23,6 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
   },
   watch:true,
-  // target:['web', 'es6'],
+  target:['web', 'es6'],
   mode:'development'
 };

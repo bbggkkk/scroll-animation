@@ -25,8 +25,9 @@ export const parseCSS = ($css:string) => {
 }
 
 export const isEval = (val:string) => {
-    if(/^\$\{.*\}$/.test(val)){
-        return new Function(val)();
+    const rt = val.match(/^\$\{(.*)\}$/);
+    if(rt !== null){
+        return new Function('return '+rt[1])();
     }else{
         return val;
     }

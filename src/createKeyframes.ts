@@ -1,5 +1,5 @@
 import { colors, colorReg } from './colorMap';
-// import Worker from './animation.worker';
+import AnimationWorker from './animation.worker';
 
 interface option {
     fnKeys?:fnKeys,
@@ -19,6 +19,30 @@ interface animationValue {
     [index:string] : number|string|Function
 }
 
+export const delay = (duration:number) => {
+    return new Promise((res, rej) => {
+        setTimeout(() => {
+            res(true);
+        }, duration);
+    });
+}
+export const play = async (element:HTMLElement, animation:Array<animationValue>) => {
+    const lng = animation.length;
+    // let frame = 0;
+    console.time('start');
+    for(let i=0; i<lng; i++){
+        gotoAndStop(element, animation, i);
+        await delay(16.6666);
+    }
+    console.timeEnd('start');
+}
+export const gotoAndStop = (element:HTMLElement, animation:Array<animationValue>, frame:number) => {
+    let style = animation[frame];
+    Object.keys(style).forEach(async item => {
+        element.style[item] = style[item];
+    });
+}
+
 export const createKeyframes = (animation:animation, length:number|Function, option?:option):Array<any> => {
     const {fnKeys, colorKeys}:option
                         = option === undefined || option.fnKeys === undefined || option.colorKeys === undefined
@@ -36,7 +60,8 @@ export const updateAnimation = (animation:animation, length:number|Function, fnK
     return () => {
         const lng = typeof length === 'function' ? length() : length;
         // const settedAnimation = ;
-        const worker = new Worker(new URL('./animation.worker.ts', import.meta.url));
+        const worker = new AnimationWorker();
+        // const worker = new Worker(new URL('./animation.worker.ts', import.meta.url));
         const promise = new Promise((res, rej) => {
             worker.onmessage = ({data}) => {
                 res(data);
@@ -54,7 +79,8 @@ export const getKeyframe = (animation:animation, length:number|Function, fnKeys:
     return (idx:number) => {
         const lng = typeof length === 'function' ? length() : length;
         // const settedAnimation = ;
-        const worker = new Worker(new URL('./animation.worker.ts', import.meta.url));
+        const worker = new AnimationWorker();
+        // const worker = new Worker(new URL('./animation.worker.ts', import.meta.url));
         const promise = new Promise((res, rej) => {
             worker.onmessage = ({data}) => {
                 res(data);
