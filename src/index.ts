@@ -29,10 +29,10 @@ const op = {
         '100' : [ 'background' ]
     }
 };
-const [updator2, getKeyframe2] = createKeyframes(animation, 1000, op);
 
 let val;
 const box = document.querySelector('.box') as HTMLElement;
+const [updator2, getKeyframe2] = createKeyframes(animation, 1000, op);
 
 updator2().then(data => {
     // play(box, data);
