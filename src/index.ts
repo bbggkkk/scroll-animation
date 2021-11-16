@@ -1,4 +1,5 @@
 import { createKeyframes } from "./createKeyframes";
+import { getCSSAttribute } from "./scrollAnimation";
 
 const animation = {
     '0' : {
@@ -26,18 +27,32 @@ const op = {
         '100' : [ 'background' ]
     }
 };
-const [updator, getKeyframe] = createKeyframes(animation, document.documentElement.scrollHeight - document.documentElement.offsetHeight, op);
+// const [updator, getKeyframe] = createKeyframes(animation, 1000, op);
+// const [updator, getKeyframe] = createKeyframes(animation, document.documentElement.scrollHeight - document.documentElement.offsetHeight, op);
+// const box = document.querySelector('.box');
 
-const box = document.querySelector('.box');
 let val;
+// const target = document.querySelector('#target') as HTMLElement;
 
+const box = document.querySelector('.box') as HTMLElement;
+const [updator, getKeyframe] = createKeyframes(getCSSAttribute(box), ()=>document.documentElement.scrollHeight - document.documentElement.offsetHeight);
 updator().then(data => val=data);
-window.addEventListener('scroll', () => {
-    Object.keys(val[0]).forEach(item => {
-        (box as HTMLElement).style[item] = val[document.documentElement.scrollTop][item];
-    })
+
+window.addEventListener('scroll', async () => {
+    requestAnimationFrame(async () => {
+        const idx = document.documentElement.scrollTop;
+        let style = val === undefined ? await getKeyframe(idx) : val[idx];
+        Object.keys(style).forEach(async item => {
+            box.style[item] = style[item];
+        });
+    });
+})
+window.addEventListener('resize', async () => {
+    requestAnimationFrame(async () => {
+        val = undefined;
+        updator().then(data => val=data);
+    });
 })
 
-// import { ScrollAnimation } from "./scrollAnimation";
 
-// new ScrollAnimation(document.querySelector('.box') as HTMLElement, window, 0, 120);
+

@@ -58,38 +58,7 @@ const fillProps = (animation:animation, animationKeyframe:Array<animationValue>,
     
     const result = animationKeyframe.map((item:animationValue, idx:number) => {
         return fillOneProp(item, animationKeyframe, keyframeKeys, baseKeyframe, props, idx);
-        // if(item[props[0]] !== undefined)    {
-        //     return item;
-        // }
-
-        // const [pk, nk] = findPrevNext(idx, baseKeyframe);
-        // const pr       = animationKeyframe[pk],
-        //       nr       = animationKeyframe[nk];
-        // const row = props.reduce((acc:animationValue, $item:string) => {
-        //     const pv   = pr[$item],
-        //           nv   = nr[$item];
-
-        //     const pn   = String(pv).match(numeric).map($$item => Number($$item)),
-        //           nn   = String(nv).match(numeric).map($$item => Number($$item));
-
-        //     const dv   = nn.map(($nv, $idx) => {
-        //         return parseFloat((pn[$idx] + (($nv - pn[$idx]) / (nk - pk) * (idx - pk))).toFixed(3));
-        //     });
-
-        //     let cnt = 0;
-        //     const av = String(nv).replace(numeric, () => {
-        //         const returnValue = dv[cnt];
-        //         cnt++;
-        //         return String(returnValue);
-        //     });
-        //     acc[$item] = isNaN(Number(av)) ? av : Number(av);
-
-        //     return acc;
-        // }, {});
-        
-        // return row;
     });
-    // console.log(result);
 
     return result;
 }
@@ -129,7 +98,7 @@ const fillOneProp = (animationValue:animationValue, animationKeyframe:Array<anim
 
 const findPrevNext = (idx:number, baseKeyframe:Array<number>) => {
     const nk = baseKeyframe.findIndex((item, $idx) => {
-        return Number(item) > idx;
+        return Number(item) >= idx;
     });
     const pk = nk - 1;
 
@@ -170,7 +139,7 @@ onmessage = ({data}) => {
         acc[item] = undefined;
         return acc;
     },{});
-
+    
     let animationKeyframe = new Array(length).fill(baseProp);
 
     const undefinedAnimation = fillUndefinedProp(animation, baseKeyframe, keyframeKeys, props);
