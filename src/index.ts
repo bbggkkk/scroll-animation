@@ -32,11 +32,10 @@ const op = {
 
 let val;
 const box = document.querySelector('.box') as HTMLElement;
-const [updator2, getKeyframe2] = createKeyframes(animation, 1000, op);
+const [updator2, getKeyframe2] = createKeyframes(animation, 600, op);
 
 updator2().then(data => {
-    // play(box, data);
-    console.log(data);
+    play(box, data, 240);
     const range = document.querySelector('input');
     range.setAttribute('max', String(data.length - 1));
     range.addEventListener('input', (e) => {

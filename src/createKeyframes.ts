@@ -26,13 +26,14 @@ export const delay = (duration:number) => {
         }, duration);
     });
 }
-export const play = async (element:HTMLElement, animation:Array<animationValue>) => {
-    const lng = animation.length;
+export const play = async (element:HTMLElement, animation:Array<animationValue>, fps:number = 60) => {
+    const lng      = animation.length;
+    const delayNum = 1000/fps;
     // let frame = 0;
     console.time('start');
     for(let i=0; i<lng; i++){
         gotoAndStop(element, animation, i);
-        await delay(16.6666);
+        await delay(delayNum);
     }
     console.timeEnd('start');
 }
