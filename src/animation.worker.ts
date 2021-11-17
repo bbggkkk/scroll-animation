@@ -112,15 +112,16 @@ const findPrev = (animation:animation, idx:number, prop:string, keyframeKeys:Arr
     if(animation[keyframeKeys[val]][prop] !== undefined){
         return [keyframeKeys[val], val];
     }else{
-        findPrev(animation, val, prop, keyframeKeys);
+        return findPrev(animation, val, prop, keyframeKeys);
     }
 }
 const findNext = (animation:animation, idx:number, prop:string, keyframeKeys:Array<string>) => {
     const val = idx+1;
     if(animation[keyframeKeys[val]][prop] !== undefined){
+        console.log([keyframeKeys[val], val])
         return [keyframeKeys[val], val];
     }else{
-        findNext(animation, val, prop, keyframeKeys);
+        return findNext(animation, val, prop, keyframeKeys);
     }
 }
 

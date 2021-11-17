@@ -38,7 +38,6 @@ const [updator2, getKeyframe2] = createKeyframes(ani, 600);
 // const [updator2, getKeyframe2] = createKeyframes(ani, 600, op);
 
 updator2().then(data => {
-    console.log(data);
     gotoAndStop(box, data, Math.round(document.documentElement.scrollTop));
     const range = document.querySelector('input');
     range.setAttribute('max', String(data.length - 1));
@@ -47,9 +46,9 @@ updator2().then(data => {
         gotoAndStop(box, data, i);
     })
 
-    // range.addEventListener('input', (e) => {
-    //     gotoAndStop(box, data, Number((e.target as HTMLInputElement).value))
-    // });
+    range.addEventListener('input', (e) => {
+        gotoAndStop(box, data, Number((e.target as HTMLInputElement).value))
+    });
 });
 
 
