@@ -19,6 +19,10 @@ interface animationValue {
     [index:string] : number|string|Function
 }
 
+interface playOption {
+    [index:string] : Function
+}
+
 export const delay = (duration:number) => {
     return new Promise((res, rej) => {
         setTimeout(() => {
@@ -30,12 +34,10 @@ export const play = async (element:HTMLElement, animation:Array<animationValue>,
     const lng      = animation.length;
     const delayNum = 1000/fps;
     // let frame = 0;
-    console.time('start');
     for(let i=0; i<lng; i++){
         gotoAndStop(element, animation, i);
         await delay(delayNum);
     }
-    console.timeEnd('start');
 }
 export const gotoAndStop = (element:HTMLElement, animation:Array<animationValue>, frame:number) => {
     let style = animation[frame];

@@ -37,12 +37,12 @@ const fillUndefinedProp = (animation:animation, baseKeyframe:Array<number>, keyf
                 const na         = animation[next][$item];
 
                 const prevMatch = String(pa).match(numeric);
-                const dval = String(na).match(numeric).map(($$item, $$idx) => {
+                const dval = prevMatch !== null ? String(na).match(numeric).map(($$item, $$idx) => {
                     return parseFloat((parseFloat(prevMatch[$$idx]) + ((parseFloat($$item) - parseFloat(prevMatch[$$idx]))/((baseKeyframe[nv] - baseKeyframe[pv])/baseKeyframe[idx]))).toFixed(3));
-                })
+                }) : pa;
 
                 let cnt = 0;
-                const aval = String(na).replace(numeric, () => {
+                const aval = String(pa).replace(numeric, () => {
                     const returnValue = dval[cnt];
                     cnt++;
                     return String(returnValue);
@@ -77,14 +77,15 @@ const fillOneProp = (animationValue:animationValue, animationKeyframe:Array<anim
         const pv   = pr[$item],
               nv   = nr[$item];
 
-        const pn   = String(pv).match(numeric).map($$item => Number($$item)),
-              nn   = String(nv).match(numeric).map($$item => Number($$item));
-        const dv   = nn.map(($nv, $idx) => {
+        const isString = String(pv).match(numeric) === null;
+        const pn   = !isString ? String(pv).match(numeric).map($$item => Number($$item)) : [],
+              nn   = !isString ? String(nv).match(numeric).map($$item => Number($$item)) : [];
+        const dv   = !isString ? nn.map(($nv, $idx) => {
             return parseFloat((pn[$idx] + (($nv - pn[$idx]) / (nk - pk) * (idx - pk))).toFixed(3));
-        });
+        }) : pv;
 
         let cnt = 0;
-        const av = String(nv).replace(numeric, () => {
+        const av = String(pv).replace(numeric, () => {
             const returnValue = dv[cnt];
             cnt++;
             return String(returnValue);
