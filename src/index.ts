@@ -31,26 +31,36 @@ const op = {
 };
 
 let val;
+const hi  = () => { return (document.querySelector('#height') as HTMLElement).offsetHeight - document.documentElement.offsetHeight; }
 const box = document.querySelector('.box') as HTMLElement;
 const ani = getCSSAttribute(box);
 console.log(ani, animation);
-const [updator2, getKeyframe2] = createKeyframes(ani, 600);
-// const [updator2, getKeyframe2] = createKeyframes(ani, 600, op);
+const [updator2, getKeyframe2] = createKeyframes(ani, hi);
+// const [updator2, getKeyframe2] = createKeyframes(ani, hi, op);
+let data;
 
-updator2().then(data => {
-    gotoAndStop(box, data, Math.round(document.documentElement.scrollTop));
-    const range = document.querySelector('input');
-    range.setAttribute('max', String(data.length - 1));
-    window.addEventListener('scroll', (e) => {
-        const i = Math.round(document.documentElement.scrollTop) > 600 ? 600 : Math.round(document.documentElement.scrollTop);
-        gotoAndStop(box, data, i);
-    })
 
-    range.addEventListener('input', (e) => {
-        gotoAndStop(box, data, Number((e.target as HTMLInputElement).value))
+const res = () => {
+    updator2().then(val => {
+        data = val;
+        gotoAndStop(box, data, Math.round(document.documentElement.scrollTop));
+        const range = document.querySelector('input');
+        range.setAttribute('max', String(data.length - 1));
+        window.addEventListener('scroll', (e) => {
+            const i = Math.round(document.documentElement.scrollTop) > hi() ? hi() : Math.round(document.documentElement.scrollTop);
+            gotoAndStop(box, data, i);
+            range.value = String(i);
+        })
+    
+        range.addEventListener('input', (e) => {
+            gotoAndStop(box, data, Number((e.target as HTMLInputElement).value));
+            window.scroll(0, Number((e.target as HTMLInputElement).value) );
+        });
     });
-});
 
+}    
+res();
+window.addEventListener('resize', res)
 
 
 // const [updator, getKeyframe] = createKeyframes(getCSSAttribute(box), ()=>document.documentElement.scrollHeight - document.documentElement.offsetHeight);
