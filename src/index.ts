@@ -58,9 +58,12 @@ const res = () => {
         });
     });
 
-}    
-res();
-window.addEventListener('resize', res)
+}   
+
+const ro = new ResizeObserver(res);
+ro.observe(document.documentElement);
+// res();
+// window.addEventListener('resize', res)
 
 
 // const [updator, getKeyframe] = createKeyframes(getCSSAttribute(box), ()=>document.documentElement.scrollHeight - document.documentElement.offsetHeight);
