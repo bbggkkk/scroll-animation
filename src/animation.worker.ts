@@ -74,6 +74,7 @@ const fillOneProp = (animationValue:animationValue, animationKeyframe:Array<anim
     const pr       = animationKeyframe[pk],
           nr       = animationKeyframe[nk];
     const row = props.reduce((acc:animationValue, $item:string) => {
+        // console.log(pr, nr, $item);
         const pv   = pr[$item],
               nv   = nr[$item];
 
@@ -99,7 +100,7 @@ const fillOneProp = (animationValue:animationValue, animationKeyframe:Array<anim
 
 const findPrevNext = (idx:number, baseKeyframe:Array<number>) => {
     const nk = baseKeyframe.findIndex((item, $idx) => {
-        return Number(item) >= idx;
+        return Number(item) > idx;
     });
     const pk = nk - 1;
 
@@ -118,7 +119,6 @@ const findPrev = (animation:animation, idx:number, prop:string, keyframeKeys:Arr
 const findNext = (animation:animation, idx:number, prop:string, keyframeKeys:Array<string>) => {
     const val = idx+1;
     if(animation[keyframeKeys[val]][prop] !== undefined){
-        console.log([keyframeKeys[val], val])
         return [keyframeKeys[val], val];
     }else{
         return findNext(animation, val, prop, keyframeKeys);
@@ -155,7 +155,7 @@ onmessage = ({data}) => {
     }else{        
         postMessage(fillOneProp(animation, animationKeyframe, keyframeKeys, baseKeyframe, props, idx));
     }
-    // close();
+    close();
 }
 
 export default null as any;

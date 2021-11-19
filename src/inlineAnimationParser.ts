@@ -5,29 +5,31 @@ export const getCSSAttribute = (element:HTMLElement) => {
         if(rowname === null){
             return acc;
         }else{
-            acc[rowname[1]] = parseCSS(val);
+            acc[rowname[1]] = parseCSS(val, element);
             return acc;
         }
     },{});
     return attrs;
 }
 
-export const parseCSS = ($css:string) => {
+export const parseCSS = ($css:string, element:HTMLElement) => {
     const css       = $css.replace(/;$/,"").trim();
     const cssJS     = css.replace(/\n|(;)$/g,"")
-        .split(";")
+        .split(/;(?![^<?]*\?>)/)
         .map(item => item.replace(/\-([a-z])/g,(match,p1)=>p1.toUpperCase()))
         .reduce( (acc,item) => {
-            acc[item.split(":")[0].trim()] = isEval(item.split(":")[1].replace(/ +/g," ").trim());
+            const i = item.indexOf(':');
+            const [val, key] = [item.substring(0, i), item.substring(i+1)];
+            acc[val.trim()] = isEval(key.replace(/ +/g," ").trim(), element);
             return acc;
         },{});
     return cssJS;
 }
 
-export const isEval = (val:string) => {
-    const rt = val.match(/^\$\{(.*)\}$/);
+export const isEval = (val:string, element:HTMLElement) => {
+    const rt = val.match(/^\<\?(.*)\?\>$/);
     if(rt !== null){
-        return new Function('return '+rt[1])();
+        return new Function(rt[1]);
     }else{
         return val;
     }
