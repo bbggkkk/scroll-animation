@@ -12,10 +12,10 @@ export const getCSSAttribute = (element:HTMLElement) => {
     return attrs;
 }
 
-export const parseCSS = ($css:string, element:HTMLElement) => {
+export const parseCSS = ($css:string, element:HTMLElement):object => {
     const css       = $css.replace(/;$/,"").trim();
     const cssJS     = css.replace(/\n|(;)$/g,"")
-        .split(/;(?![^<?]*\?>)/)
+        .split(/;(?![^<$]*\$>)/)
         .map(item => item.replace(/\-([a-z])/g,(match,p1)=>p1.toUpperCase()))
         .reduce( (acc,item) => {
             const i = item.indexOf(':');
@@ -27,9 +27,9 @@ export const parseCSS = ($css:string, element:HTMLElement) => {
 }
 
 export const isEval = (val:string, element:HTMLElement) => {
-    const rt = val.match(/^\<\?(.*)\?\>$/);
+    const rt = val.match(/^\<\$(.*)\$\>$/);
     if(rt !== null){
-        return new Function(rt[1]);
+        return new Function(rt[1]).bind(element);
     }else{
         return val;
     }

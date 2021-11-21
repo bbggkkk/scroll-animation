@@ -133,7 +133,7 @@ const getPropValue = () => {
 
 onmessage = ({data}) => {
     const {animation, length, idx} = data;
-    const base         = (length)/100;
+    const base         = (length-1)/100;
     const keyframeKeys = Object.keys(animation);
     const baseKeyframe = keyframeKeys.map(item => Math.round(base * parseInt(item)));
     const props = getAnimationProps(animation);
@@ -142,7 +142,7 @@ onmessage = ({data}) => {
         return acc;
     },{});
     
-    let animationKeyframe = new Array(length).fill(baseProp);
+    let animationKeyframe = new Array(length-1).fill(baseProp);
 
     const undefinedAnimation = fillUndefinedProp(animation, baseKeyframe, keyframeKeys, props);
     keyframeKeys.forEach((item, idx) => {

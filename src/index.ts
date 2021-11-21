@@ -2,6 +2,7 @@ import { createKeyframes } from "./createKeyframes";
 import { getCSSAttribute } from "./inlineAnimationParser";
 
 import { play, gotoAndStop } from "./createKeyframes";
+import { ScrollAnimation, ScrollAnimationItem } from "./scrollAnimation";
 
 // const animation = {
 //     '0' : {
@@ -30,11 +31,16 @@ import { play, gotoAndStop } from "./createKeyframes";
 //     }
 // };
 
-const target = document.querySelectorAll('.box');
-const lg     = [...target];
+const target     = document.querySelectorAll('.box');
+const scrollBody = window;
+const scrollEle  = scrollBody === window ? document.documentElement : scrollBody;
 
-lg.forEach(item => {
-    createKeyframes(getCSSAttribute(item as HTMLElement), 10)[0]().then(data => {
-        console.log(data);
-    });
+const targets    = [...target];
+const ups        = targets.map(item => {
+    const [updator, getKeyframe] = createKeyframes(getCSSAttribute(item as HTMLElement), 10);
+    console.log(new ScrollAnimationItem(item as HTMLElement, updator, getKeyframe));
+    // return createKeyframes(getCSSAttribute(item as HTMLElement), 10);
 });
+
+
+// console.log(new ScrollAnimation(window, 'div'));
