@@ -59,7 +59,7 @@ export class ScrollAnimationItem {
 
     onResize(){
         this.setLength();
-        [this.updator, this.getKeyframe] = createKeyframes(getCSSAttribute(this.element), this.length);
+        [this.updator, this.getKeyframe] = createKeyframes(getCSSAttribute(this.element.getAttribute('data-animation-bind') ? document.querySelector(this.element.getAttribute('data-animation-bind')) : this.element), this.length);
         this.updator().then((data:Array<animationValue>) => {
             this.animation = data;
         });
