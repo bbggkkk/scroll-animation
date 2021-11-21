@@ -15,7 +15,7 @@ Scroll Animation 클래스는 window 객체 안에 ScrollAnimation 이라는 이
 입력 파라미터는 아래와 같습니다.
 
 ```js
-new ScrollAnimation(element, scrollTarget, animationName, scrollStartPosition, scrollEndPosition);
+new ScrollAnimation(element, scrollTarget);
 ```
 |항목 이름|설명|형식|비고|
 |-|-|-|-|
