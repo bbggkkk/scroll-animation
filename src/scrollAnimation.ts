@@ -13,18 +13,20 @@ export class ScrollAnimation {
         this.scrollEle  = scrollBody === window ? document.documentElement : scrollBody as HTMLElement;
         this.children   = Array.from(document.querySelectorAll(targetQuery)).map(item => new ScrollAnimationItem(item as HTMLElement));
 
-        this.onScrollFunction();
+        // this.onScrollFunction();
         this.onResizeFunction();
         this.onResize();
         this.bindEvent();
     }
     bindEvent(){
         this.scrollBody.addEventListener('scroll', () => {
+            console.time('scroll')
+            requestAnimationFrame(() => {
             this.children.forEach((item:ScrollAnimationItem) => {
-                requestAnimationFrame(() => {
                     item.onAnimation(Math.round(this.scrollEle.scrollTop));
-                })
+                });
             });
+            console.timeEnd('scroll')
         });
     }
     onResize(){
@@ -125,7 +127,7 @@ export class ScrollAnimationItem {
 
     onAnimation(frame:number):void {
         const i = this.limitFrameSet(frame);
-        this.onWillChange(i);
+        // this.onWillChange(i);
         this.setAnimationFrame(i);
     }
     async onWillChange(frame:number){
