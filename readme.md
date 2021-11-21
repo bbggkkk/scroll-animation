@@ -28,7 +28,9 @@ new ScrollAnimation(element, scrollTarget, animationName, scrollStartPosition, s
 
 1. 먼저 애니메이션을 정의해야 합니다.
 ```html
-<div id="animation" data-animation-0="color:red;"
+<div id="animation" data-animation-start="0"
+                    data-animation-end="200"
+                    data-animation-0="color:red;"
                     data-animation-100="color:blud;">
     <p>HELLO</p>
 </div>
@@ -48,25 +50,26 @@ const animation = new ScrollAnimation(element, scrollTarget);
 ## Animation 정의하기
 
 ### 필수 입력값값
-|항목 이름|설명|비고|
-|-|-|-|
-|data-animation-0|애니메이션의 처음 값 입니다.||
-|data-animation-100|애니메이션의 마지막막 값 입니다.||
-|data-animation-start|애니메이션을 적용받을 스크롤 범위를 정의합니다. 시작위치입니다.||
-|data-animation-end|애니메이션을 적용받을 스크롤 범위를 정의합니다. 끝 위치입니다.||
+|항목 이름|설명|형식|비고|
+|-|-|-|-|
+|data-animation-0|애니메이션의 처음 값 입니다.|`string`||
+|data-animation-100|애니메이션의 마지막막 값 입니다.|`string`||
+|data-animation-start|애니메이션을 적용받을 스크롤 범위를 정의합니다. 시작위치입니다.|`number` `function`||
+|data-animation-end|애니메이션을 적용받을 스크롤 범위를 정의합니다. 끝 위치입니다.|`number` `function`||
 
 ### 선택적 입력값
 |항목 이름|설명|비고|
 |-|-|-|
 |data-animation-[n]|애니메이션의 중간값을 정의합니다.||
 |data-animation-bind|쿼리셀렉터 문자열을 입력하면 그 엘리먼트에 적용된 애니메이션을 적용받습니다.||
-|data-animation-start|애니메이션을 적용받을 스크롤 범위를 정의합니다. 시작위치입니다.||
-|data-animation-end|애니메이션을 적용받을 스크롤 범위를 정의합니다. 끝 위치입니다.||
 
 #### data-animation-[n]
 CSS에서 javascript를 사용할 수 있는 문법을 제공합니다. CSS속성의 값으로 javascript를 넘길 수 있습니다. javascript는 *<\$* *\$*> 사이에 작성합니다. 넘기는 javascript는 CSS 속성의 값을 반환해야 합니다.
 ```html
 <div id="animation" style="width:50px; height:100px;"
+                    data-animation-start="0"
+                    data-animation-end="200"
+
                     data-animation-0="color:red; transform:translate(0px, 0px);"
                     data-animation-100="color:blud; transform:<$ return `translate(${this.offsetWidth}px, ${this.offsetHeight}px)` $>;">
     <p>HELLO</p>
@@ -75,6 +78,58 @@ CSS에서 javascript를 사용할 수 있는 문법을 제공합니다. CSS속�
 위처럼 작성한 코드는 함수 실행 후 아래처럼 인식합니다.
 ```html
 <div id="animation" style="width:50px; height:100px;"
+                    data-animation-start="0"
+                    data-animation-end="200"
+
+                    data-animation-0="color:red; transform:translate(0px, 0px);"
+                    data-animation-100="color:blud; transform:translate(50px, 100px);">
+    <p>HELLO</p>
+</div>
+```
+
+#### data-animation-bind
+다른 엘리먼트에 애니메이션을 정의하고 전달받을 수 있습니다.
+```html
+<div id="animation" style="width:50px; height:100px;"
+                    data-animation-start="0"
+                    data-animation-end="200">
+    <p>HELLO</p>
+</div>
+<div id="my-animation"  style="width:100px; height:200px;"
+                        data-animation-start="0"
+                        data-animation-end="100">
+    <p>HELLO</p>
+</div>
+<p  id="good-animation" data-animation-0="color:red; transform:translate(0px, 0px);"
+                        data-animation-100="color:blud; transform:<$ return `translate(${this.offsetWidth}px, ${this.offsetHeight}px)` $>;">
+```
+위처럼 작성한 코드는 함수 실행 후 아래처럼 인식합니다.
+
+```html
+<div id="animation" style="width:50px; height:100px;"
+                    data-animation-start="0"
+                    data-animation-end="200"
+                    data-animation-0="color:red; transform:translate(0px, 0px);"
+                    data-animation-100="color:blud; transform:translate(50px, 100px);">
+    <p>HELLO</p>
+</div>
+<div id="my-animation"  style="width:100px; height:200px;"
+                        data-animation-start="0"
+                        data-animation-end="100"
+                        data-animation-0="color:red; transform:translate(0px, 0px);"
+                        data-animation-100="color:blud; transform:translate(100px, 200px);">
+    <p>HELLO</p>
+</div>
+```
+
+#### data-animation-start, data-animation-end
+스크롤 이벤트를 받은 엘리먼트의 scrollTop이 해당하는 범위 안에 있을 때, 애니메이션을 적용해주는 범위를 정의합니다. 일반적인 숫자와 함수를 쓸 수 있습니다. 함수를 쓰는 방법입니다.
+```html
+<div id="heigher" style="height:200vh;"></div>
+<div id="animation" style="width:50px; height:100px;"
+                    data-animation-start="0"
+                    data-animation-end="<$ return document.querySelector('#heigher').offsetHeight; $>"
+
                     data-animation-0="color:red; transform:translate(0px, 0px);"
                     data-animation-100="color:blud; transform:translate(50px, 100px);">
     <p>HELLO</p>
