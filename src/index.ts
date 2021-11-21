@@ -38,7 +38,7 @@ const scrollEle  = scrollBody === window ? document.documentElement : scrollBody
 const targets    = [...target];
 const ups        = targets.map(item => {
     const [updator, getKeyframe] = createKeyframes(getCSSAttribute(item as HTMLElement), 10);
-    console.log(new ScrollAnimationItem(item as HTMLElement, updator, getKeyframe));
+    console.log(new ScrollAnimationItem(item as HTMLElement));
     // return createKeyframes(getCSSAttribute(item as HTMLElement), 10);
 });
 
