@@ -20,13 +20,11 @@ export class ScrollAnimation {
     }
     bindEvent(){
         this.scrollBody.addEventListener('scroll', () => {
-            console.time('scroll')
             requestAnimationFrame(() => {
             this.children.forEach((item:ScrollAnimationItem) => {
                     item.onAnimation(Math.round(this.scrollEle.scrollTop));
                 });
             });
-            console.timeEnd('scroll')
         });
     }
     onResize(){
