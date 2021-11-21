@@ -142,7 +142,7 @@ onmessage = ({data}) => {
         return acc;
     },{});
     
-    let animationKeyframe = new Array(length-1).fill(baseProp);
+    let animationKeyframe = new Array(length).fill(baseProp);
 
     const undefinedAnimation = fillUndefinedProp(animation, baseKeyframe, keyframeKeys, props);
     keyframeKeys.forEach((item, idx) => {
