@@ -6,6 +6,8 @@ export class ScrollAnimation {
     scrollBody          : any;
     scrollEle           : HTMLElement;
     children            : Array<ScrollAnimationItem>;
+
+    scrollFunctionFunction : Function;
     
     resizeObserver      : ResizeObserver;
     constructor(scrollBody:any, targetQuery:string){
@@ -13,17 +15,17 @@ export class ScrollAnimation {
         this.scrollEle  = scrollBody === window ? document.documentElement : scrollBody as HTMLElement;
         this.children   = Array.from(document.querySelectorAll(targetQuery)).map(item => new ScrollAnimationItem(item as HTMLElement));
 
-        // this.onScrollFunction();
         this.onResizeFunction();
-        this.onResize();
-        this.bindEvent();
+        this.load();
     }
     bindEvent(){
-        this.scrollBody.addEventListener('scroll', () => {
-            requestAnimationFrame(() => {
-            this.children.forEach((item:ScrollAnimationItem) => {
-                    item.onAnimation(Math.round(this.scrollEle.scrollTop));
-                });
+        this.scrollFunctionFunction = this.scrollFunction.bind(this);
+        this.scrollBody.addEventListener('scroll', this.scrollFunctionFunction); 
+    }
+    scrollFunction(){
+        requestAnimationFrame(() => {
+        this.children.forEach((item:ScrollAnimationItem) => {
+                item.onAnimation(Math.round(this.scrollEle.scrollTop));
             });
         });
     }
@@ -32,20 +34,22 @@ export class ScrollAnimation {
         this.resizeObserver.observe(this.scrollEle);
     }
     onResizeFunction(){
-        this.children.forEach((item:ScrollAnimationItem) => {
-            item.onResize();
-            item.onAnimation(Math.round(this.scrollEle.scrollTop));
+        requestAnimationFrame(() => {
+            this.children.forEach((item:ScrollAnimationItem) => {
+                item.onResize();
+                item.onAnimation(Math.round(this.scrollEle.scrollTop));
+            });
         });
     }
-    onScrollFunction(){
-        const event = ['wheel', 'touchstart'];
-        event.forEach(evt => {
-            this.scrollBody.addEventListener(evt, () => {
-                this.children.forEach((item:ScrollAnimationItem) => {
-                    item.onWillChange(Math.round(this.scrollEle.scrollTop));
-                });
-            });
-        })
+
+    load(){
+        this.onResize();
+        this.bindEvent();
+    }
+    destroy(){
+        this.scrollBody.removeEventListener('scroll', this.scrollFunctionFunction);
+        this.resizeObserver.unobserve(this.scrollEle);
+        this.resizeObserver = undefined;
     }
 }
 

@@ -61,7 +61,7 @@
                         data-animation-end="200">test-200</div>
 
     <p  class="animation"   data-animation-0="transform:<$ return `translate(${this.offsetTop}px, ${0}px)` $>;"
-                            data-animation-100="transform:<$ return `translate(${this.offsetWidth}px, ${0}px)` $>;"></p>
+                            data-animation-100="transform:<$ return `translate(${window.innerWidth - this.offsetWidth}px, ${0}px)` $>;"></p>
 
     <h1     id="title" class="target"
             data-animation-start="0"
