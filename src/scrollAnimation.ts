@@ -13,6 +13,7 @@ export class ScrollAnimation {
         this.scrollEle  = scrollBody === window ? document.documentElement : scrollBody as HTMLElement;
         this.children   = Array.from(document.querySelectorAll(targetQuery)).map(item => new ScrollAnimationItem(item as HTMLElement));
 
+        this.onScrollFunction();
         this.onResizeFunction();
         this.onResize();
         this.bindEvent();
@@ -20,7 +21,9 @@ export class ScrollAnimation {
     bindEvent(){
         this.scrollBody.addEventListener('scroll', () => {
             this.children.forEach((item:ScrollAnimationItem) => {
-                item.onAnimation(Math.round(this.scrollEle.scrollTop));
+                requestAnimationFrame(() => {
+                    item.onAnimation(Math.round(this.scrollEle.scrollTop));
+                })
             });
         });
     }
@@ -33,6 +36,16 @@ export class ScrollAnimation {
             item.onResize();
             item.onAnimation(Math.round(this.scrollEle.scrollTop));
         });
+    }
+    onScrollFunction(){
+        const event = ['wheel', 'touchstart'];
+        event.forEach(evt => {
+            this.scrollBody.addEventListener(evt, () => {
+                this.children.forEach((item:ScrollAnimationItem) => {
+                    item.onWillChange(Math.round(this.scrollEle.scrollTop));
+                });
+            });
+        })
     }
 }
 
@@ -51,6 +64,8 @@ export class ScrollAnimationItem {
     scrollStart : number|Function;
     scrollEnd   : number|Function;
     length      : Function;
+
+    timer       : any;
     constructor(element:HTMLElement){
         this.element     = element;
         this.animation   = undefined;
@@ -91,8 +106,8 @@ export class ScrollAnimationItem {
         }
         return undefined;
     }
-    isScroll(i:number):Boolean{
-        if(this.getLngResult(this.scrollStart) <= i && this.getLngResult(this.scrollEnd) >= i) {
+    isWillChange(i:number):Boolean{
+        if(this.getLngResult(this.scrollStart)-50 <= i && this.getLngResult(this.scrollEnd)+50 >= i) {
             return true;
         }else{
             return false;
@@ -110,7 +125,24 @@ export class ScrollAnimationItem {
 
     onAnimation(frame:number):void {
         const i = this.limitFrameSet(frame);
+        this.onWillChange(i);
         this.setAnimationFrame(i);
+    }
+    async onWillChange(frame:number){
+        if(this.isWillChange(frame)){
+            clearTimeout(this.timer);
+            if(this.animation !== undefined){
+                this.element.style.willChange = Object.keys(this.animation[0]).join(',');
+            }else{
+                this.element.style.willChange = Object.keys(await this.getKeyframe(frame)).join(',');
+            }
+
+            this.timer = setTimeout(() => {
+                this.element.style.willChange = 'auto';
+            }, 1000);
+        }else{
+            this.element.style.willChange = 'auto';
+        }
     }
 
 }
