@@ -29,9 +29,7 @@ export const parseCSS = ($css:string, element:HTMLElement, elementReplace?:HTMLE
 export const isEval = (val:string, element:HTMLElement, elementReplace?:HTMLElement) => {
     if(elementReplace !== undefined)    element = elementReplace;
     const rt = val.match(/^\<\$(.*)\$\>$/);
-    console.log(rt);
     if(rt !== null){
-        console.log(new Function(rt[1]).bind(element));
         return new Function(rt[1]).bind(element);
     }else{
         return val;
