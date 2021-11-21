@@ -133,7 +133,7 @@ const getPropValue = () => {
 
 onmessage = ({data}) => {
     const {animation, length, idx} = data;
-    const base         = (length-1)/100;
+    const base         = (length)/100;
     const keyframeKeys = Object.keys(animation);
     const baseKeyframe = keyframeKeys.map(item => Math.round(base * parseInt(item)));
     const props = getAnimationProps(animation);
@@ -152,7 +152,7 @@ onmessage = ({data}) => {
         animationKeyframe = fillProps(animation, animationKeyframe, keyframeKeys, baseKeyframe, props);
     
         postMessage(animationKeyframe);
-    }else{        
+    }else{
         postMessage(fillOneProp(animation, animationKeyframe, keyframeKeys, baseKeyframe, props, idx));
     }
     close();

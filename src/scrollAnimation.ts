@@ -13,6 +13,7 @@ export class ScrollAnimation {
         this.scrollEle  = scrollBody === window ? document.documentElement : scrollBody as HTMLElement;
         this.children   = Array.from(document.querySelectorAll(targetQuery)).map(item => new ScrollAnimationItem(item as HTMLElement));
 
+        this.onResizeFunction();
         this.onResize();
         this.bindEvent();
     }
@@ -24,10 +25,14 @@ export class ScrollAnimation {
         });
     }
     onResize(){
-        this.resizeObserver = new ResizeObserver(() => {
-            this.children.forEach(item => item.onResize());
-        });
+        this.resizeObserver = new ResizeObserver(this.onResizeFunction.bind(this));
         this.resizeObserver.observe(this.scrollEle);
+    }
+    onResizeFunction(){
+        this.children.forEach((item:ScrollAnimationItem) => {
+            item.onResize();
+            item.onAnimation(Math.round(this.scrollEle.scrollTop));
+        });
     }
 }
 
@@ -64,7 +69,7 @@ export class ScrollAnimationItem {
     }
     setLength():void {
         this.length      = () => {
-            return this.getLngResult(this.scrollEnd) - this.getLngResult(this.scrollStart) + 1;
+            return this.getLngResult(this.scrollEnd) - this.getLngResult(this.scrollStart);
         }
     }
 

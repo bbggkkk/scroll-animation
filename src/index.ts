@@ -31,16 +31,4 @@ import { ScrollAnimation, ScrollAnimationItem } from "./scrollAnimation";
 //     }
 // };
 
-const target     = document.querySelectorAll('.box');
-const scrollBody = window;
-const scrollEle  = scrollBody === window ? document.documentElement : scrollBody;
-
-const targets    = [...target];
-// const ups        = targets.map(item => {
-//     const [updator, getKeyframe] = createKeyframes(getCSSAttribute(item as HTMLElement), 10);
-//     console.log(new ScrollAnimationItem(item as HTMLElement));
-//     // return createKeyframes(getCSSAttribute(item as HTMLElement), 10);
-// });
-
-
 console.log(new ScrollAnimation(window, 'div'));
