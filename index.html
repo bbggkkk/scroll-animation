@@ -54,11 +54,11 @@
     <div class="target" style="position:fixed; top:0; left:0;"
                         data-animation-bind=".animation"
                         data-animation-start="0"
-                        data-animation-end="500">test-500</div>
+                        data-animation-end="<$ return document.documentElement.scrollHeight - document.documentElement.offsetHeight; $>">test-500</div>
     <div class="target" style="position:fixed; top:0; left:0;"
                         data-animation-bind=".animation"
                         data-animation-start="0"
-                        data-animation-end="200">test-200</div>
+                        data-animation-end="<$ return (document.documentElement.scrollHeight - document.documentElement.offsetHeight) / 2; $>">test-200</div>
 
     <p  class="animation"   data-animation-0="transform:translate(0px, 0px);"
                             data-animation-100="transform:<$ return `translate(${window.innerWidth - this.offsetWidth}px, 0px)`; $>;"></p>
@@ -89,7 +89,7 @@
     </div>
     <!-- Yellow Box -->
 
-    <div    style="height:400vh;"></div>
+    <div    style="height:300vh;"></div>
 
     <!-- <script src="./scroll-animation.js"></script> -->
     <script src="./dist/main.js"></script>
