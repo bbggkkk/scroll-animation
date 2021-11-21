@@ -60,10 +60,10 @@
                         data-animation-start="0"
                         data-animation-end="200">test-200</div>
 
-    <p  class="animation"   data-animation-0="transform:<$ return `translate(${this.offsetTop}px, ${0}px)` $>;"
-                            data-animation-100="transform:<$ return `translate(${window.innerWidth - this.offsetWidth}px, ${0}px)` $>;"></p>
+    <p  class="animation"   data-animation-0="transform:translate(0px, 0px);"
+                            data-animation-100="transform:<$ console.log(this); return `translate(${window.innerWidth - this.offsetWidth}px, 0px)`; $>;"></p>
 
-    <h1     id="title" class="target"
+    <!-- <h1     id="title" class="target"
             data-animation-start="0"
             data-animation-end="<$return document.documentElement.scrollHeight - document.documentElement.offsetHeight;$>"
             data-animation-0="color:white; background:rgba(0,0,0,1); box-shadow:0px 16px 32px rgba(0,0,0,0.2);"
@@ -86,7 +86,7 @@
         <p  class="target-p"    data-animation-0="font-size:min(120px,20vw); color:black;"
                                 data-animation-50="color:white;"
                                 data-animation-100="font-size:min(240px,40vw); color:white;"></p>
-    </div>
+    </div> -->
     <!-- Yellow Box -->
 
     <div    style="height:400vh;"></div>
