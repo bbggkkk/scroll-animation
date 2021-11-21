@@ -31,4 +31,13 @@ import { ScrollAnimation, ScrollAnimationItem } from "./scrollAnimation";
 //     }
 // };
 
+declare global {
+    interface Window {
+        ScrollAnimation : Function;
+    }
+}
+
+if(!(typeof exports === 'object' && typeof module !== 'undefined')){
+    window.ScrollAnimation = ScrollAnimation;
+}
 console.log(new ScrollAnimation(window, '.target'));
