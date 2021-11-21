@@ -3,19 +3,31 @@ import { createKeyframes, gotoAndStop } from "./createKeyframes";
 import { getCSSAttribute, isEval } from "./inlineAnimationParser";
 
 export class ScrollAnimation {
-    scrollBody  : any;
-    scrollEle   : HTMLElement;
-    children    : Array<ScrollAnimationItem>;
+    scrollBody          : any;
+    scrollEle           : HTMLElement;
+    children            : Array<ScrollAnimationItem>;
+    
+    resizeObserver      : ResizeObserver;
     constructor(scrollBody:any, targetQuery:string){
         this.scrollBody = scrollBody;
         this.scrollEle  = scrollBody === window ? document.documentElement : scrollBody as HTMLElement;
         this.children   = Array.from(document.querySelectorAll(targetQuery)).map(item => new ScrollAnimationItem(item as HTMLElement));
 
+        this.onResize();
+        this.bindEvent();
+    }
+    bindEvent(){
         this.scrollBody.addEventListener('scroll', () => {
             this.children.forEach((item:ScrollAnimationItem) => {
                 item.onAnimation(this.scrollEle.scrollTop);
             });
         });
+    }
+    onResize(){
+        this.resizeObserver = new ResizeObserver(() => {
+            this.children.forEach(item => item.onResize());
+        });
+        this.resizeObserver.observe(this.scrollEle);
     }
 }
 
@@ -38,16 +50,17 @@ export class ScrollAnimationItem {
         this.element     = element;
         this.animation   = undefined;
         this.setAttributeValue();
+    }
 
-        [this.updator, this.getKeyframe] = createKeyframes(getCSSAttribute(element), this.length);
+    onResize(){
+        this.setLength();
+        [this.updator, this.getKeyframe] = createKeyframes(getCSSAttribute(this.element), this.length);
         this.updator().then((data:Array<animationValue>) => this.animation = data);
     }
 
     setAttributeValue():void{
         this.scrollStart = isEval(this.element.getAttribute('data-animation-start'), this.element);
         this.scrollEnd   = isEval(this.element.getAttribute('data-animation-end'), this.element);
-
-        this.setLength();
     }
     setLength():void {
         this.length      = () => {
