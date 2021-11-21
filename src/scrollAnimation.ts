@@ -60,7 +60,9 @@ export class ScrollAnimationItem {
     onResize(){
         this.setLength();
         [this.updator, this.getKeyframe] = createKeyframes(getCSSAttribute(this.element), this.length);
-        this.updator().then((data:Array<animationValue>) => this.animation = data);
+        this.updator().then((data:Array<animationValue>) => {
+            this.animation = data;
+        });
     }
 
     setAttributeValue():void{
@@ -85,7 +87,7 @@ export class ScrollAnimationItem {
         if(this.animation !== undefined) {
             gotoAndStop(this.element, this.animation, frame);
         }else{
-            gotoAndStop(this.element, [await this.getKeyframe(frame-1)], 0);  
+            gotoAndStop(this.element, [await this.getKeyframe(frame)], 0);  
         }
         return undefined;
     }
