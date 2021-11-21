@@ -19,7 +19,7 @@ export class ScrollAnimation {
     bindEvent(){
         this.scrollBody.addEventListener('scroll', () => {
             this.children.forEach((item:ScrollAnimationItem) => {
-                item.onAnimation(this.scrollEle.scrollTop);
+                item.onAnimation(Math.round(this.scrollEle.scrollTop));
             });
         });
     }
