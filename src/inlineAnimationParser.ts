@@ -19,7 +19,7 @@ export const parseCSS = ($css:string, element:HTMLElement, elementReplace?:HTMLE
         .map(item => item.replace(/\-([a-z])/g,(match,p1)=>p1.toUpperCase()))
         .reduce( (acc,item) => {
             const i = item.indexOf(':');
-            const [val, key] = [item.substring(0, i), decodeURIComponent(item.substring(i+1))];
+            const [val, key] = [item.substring(0, i), item.substring(i+1).match(/<\$.*\$>/) ? decodeURIComponent(item.substring(i+1)) : item.substring(i+1)];
             acc[val.trim()] = isEval(key.replace(/ +/g," ").trim(), element, elementReplace);
             return acc;
         },{});
