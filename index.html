@@ -47,70 +47,36 @@
             transform:translate(-50%,-50%);
         }
         
-
-        /* Define Animation  */
-        @keyframes title {
-            0% {
-                color:white;
-                background:rgba(0,0,0,1);
-                box-shadow:0px 16px 32px rgba(0,0,0,0.2);
-            }
-            50% {
-                background:rgba(0,0,0,1);
-            }
-            100% {
-                background:rgba(0,0,0,0);
-                color:black;
-                box-shadow:0px 0px 0px rgba(0,0,0,0);
-            }
-        }
-
-        @keyframes profile {
-            from {
-                background:#ffc72c;
-                transform:translate(0%,0%) scale(1);
-            }
-            25% {
-                transform:translate(-100%,0%) scale(0.75);
-            }
-            50% {
-                background:green;
-                transform:translate(-100%,-100%) scale(0.5);
-            }
-            75% {
-                transform:translate(0%,-100%) scale(0.75);
-            }
-            to {
-                background:rgb(0,0,255);
-                transform:translate(0%,0%) scale(1);
-            }
-        }
-        @keyframes hello {
-            from {
-                font-size:min(120px,20vw);
-                color:black;
-            }
-            50% {
-                color:white;
-            }
-            100% {
-                font-size:min(240px,40vw);
-                color:white;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <h1     id="title">Scroll Animation</h1>
-    <div    class="box">
-        <p>HI</p>
+    <h1     id="title" class="target"
+            data-animation-start="0"
+            data-animation-end="<$return document.documentElement.scrollHeight - document.documentElement.offsetHeight;$>"
+            data-animation-0="color:white; background:rgba(0,0,0,1); box-shadow:0px 16px 32px rgba(0,0,0,0.2);"
+            data-animation-50="background:rgba(0,0,0,1);"
+            data-animation-100="background:rgba(0,0,0,0); color:black; box-shadow:0px 0px 0px rgba(0,0,0,0);">Scroll Animation</h1>
+    <div    class="box target"
+            data-animation-start="0"
+            data-animation-end="<$return document.documentElement.scrollHeight - document.documentElement.offsetHeight;$>"
+            data-animation-0="background:#ffc72c; transform:translate(0%,0%) scale(1);"
+            data-animation-25="transform:translate(-100%,0%) scale(0.75);"
+            data-animation-50="background:green; transform:translate(-100%,-100%) scale(0.5);"
+            data-animation-75="transform:translate(0%,-100%) scale(0.75);"
+            data-animation-100="background:rgb(0,0,255); transform:translate(0%,0%) scale(1);">
+        <p  class="target"
+            data-animation-start="0"
+            data-animation-end="<$return document.documentElement.scrollHeight - document.documentElement.offsetHeight;$>"
+            data-animation-0="font-size:min(120px,20vw); color:black;"
+            data-animation-50="color:white;"
+            data-animation-100="font-size:min(240px,40vw); color:white;">HI</p>
     </div>
     <!-- Yellow Box -->
 
     <div    style="height:400vh;"></div>
 
-    <script src="./scroll-animation.js"></script>
-    <script src="./main.js"></script>
+    <!-- <script src="./scroll-animation.js"></script> -->
+    <script src="./dist/main.js"></script>
 </body>
 </html>

@@ -31,4 +31,4 @@ import { ScrollAnimation, ScrollAnimationItem } from "./scrollAnimation";
 //     }
 // };
 
-console.log(new ScrollAnimation(window, 'div'));
+console.log(new ScrollAnimation(window, '.target'));
