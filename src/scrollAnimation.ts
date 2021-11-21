@@ -1,14 +1,21 @@
+
 import { createKeyframes, gotoAndStop } from "./createKeyframes";
 import { getCSSAttribute, isEval } from "./inlineAnimationParser";
 
 export class ScrollAnimation {
-    scrollBody  : HTMLElement|Object;
+    scrollBody  : any;
     scrollEle   : HTMLElement;
-    children    : Object;
-    constructor(scrollBody:HTMLElement|Object, targetQuery:string){
+    children    : Array<ScrollAnimationItem>;
+    constructor(scrollBody:any, targetQuery:string){
         this.scrollBody = scrollBody;
         this.scrollEle  = scrollBody === window ? document.documentElement : scrollBody as HTMLElement;
-        this.children   = document.querySelector(targetQuery);
+        this.children   = Array.from(document.querySelectorAll(targetQuery)).map(item => new ScrollAnimationItem(item as HTMLElement));
+
+        this.scrollBody.addEventListener('scroll', () => {
+            this.children.forEach((item:ScrollAnimationItem) => {
+                item.onAnimation(this.scrollEle.scrollTop);
+            });
+        });
     }
 }
 
@@ -60,7 +67,7 @@ export class ScrollAnimationItem {
         if(this.animation !== undefined) {
             gotoAndStop(this.element, this.animation, frame);
         }else{
-            gotoAndStop(this.element, [await this.getKeyframe(frame)], 0);  
+            gotoAndStop(this.element, [await this.getKeyframe(frame-1)], 0);  
         }
         return undefined;
     }
@@ -79,6 +86,11 @@ export class ScrollAnimationItem {
         }else{
             return i;
         }
+    }
+
+    onAnimation(frame:number):void {
+        const i = this.limitFrameSet(frame);
+        this.setAnimationFrame(i);
     }
 
 }
