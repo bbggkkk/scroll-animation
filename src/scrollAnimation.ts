@@ -129,8 +129,7 @@ export class ScrollAnimationItem {
 
     onAnimation(frame:number):void {
         const i = this.limitFrameSet(frame);
-        // this.onWillChange(i);
-        this.setAnimationFrame(i);
+        this.setAnimationFrame(i - this.getLngResult(this.scrollStart));
     }
     async onWillChange(frame:number){
         if(this.isWillChange(frame)){
