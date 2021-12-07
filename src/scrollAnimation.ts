@@ -1,4 +1,3 @@
-
 import { createKeyframes, gotoAndStop } from "./createKeyframes";
 import { getCSSAttribute, isEval } from "./inlineAnimationParser";
 
@@ -34,12 +33,12 @@ export class ScrollAnimation {
         this.resizeObserver.observe(this.scrollEle);
     }
     onResizeFunction(){
-        requestAnimationFrame(() => {
-            this.children.forEach((item:ScrollAnimationItem) => {
-                item.onResize();
-                item.onAnimation(Math.round(this.scrollEle.scrollTop));
+        this.children.forEach((item:ScrollAnimationItem) => {
+                requestAnimationFrame(() => {
+                    item.onResize(Math.round(this.scrollEle.scrollTop));
+                    // item.onAnimation(Math.round(this.scrollEle.scrollTop));
+                });
             });
-        });
     }
 
     load(){
@@ -74,13 +73,14 @@ export class ScrollAnimationItem {
         this.element     = element;
         this.animation   = undefined;
         this.setAttributeValue();
-    }
-
-    onResize(){
         this.setLength();
         [this.updator, this.getKeyframe] = createKeyframes(getCSSAttribute(this.element.getAttribute('data-animation-bind') ? document.querySelector(this.element.getAttribute('data-animation-bind')) : this.element, this.element), this.length);
+    }
+
+    async onResize(frame?:number){
         this.updator().then((data:Array<animationValue>) => {
             this.animation = data;
+            frame && this.onAnimation(frame);
         });
     }
 
@@ -106,7 +106,9 @@ export class ScrollAnimationItem {
         if(this.animation !== undefined) {
             gotoAndStop(this.element, this.animation, frame);
         }else{
-            gotoAndStop(this.element, [await this.getKeyframe(frame)], 0);  
+            this.getKeyframe(frame).then(data => {
+                gotoAndStop(this.element, [data], 0);
+            });
         }
         return undefined;
     }
@@ -129,8 +131,7 @@ export class ScrollAnimationItem {
 
     onAnimation(frame:number):void {
         const i = this.limitFrameSet(frame);
-        // this.onWillChange(i);
-        this.setAnimationFrame(i);
+        this.setAnimationFrame(i - this.getLngResult(this.scrollStart));
     }
     async onWillChange(frame:number){
         if(this.isWillChange(frame)){

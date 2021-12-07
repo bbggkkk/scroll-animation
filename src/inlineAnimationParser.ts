@@ -16,10 +16,9 @@ export const parseCSS = ($css:string, element:HTMLElement, elementReplace?:HTMLE
     const css       = $css.replace(/;$/,"").trim();
     const cssJS     = css.replace(/\n|(;)$/g,"").replace(/<\$(.*)\$>/g, (match, p1) => '<$'+encodeURIComponent(p1)+'$>')
         .split(/;(?![^<$]*\$>)/)
-        .map(item => item.replace(/\-([a-z])/g,(match,p1)=>p1.toUpperCase()))
         .reduce( (acc,item) => {
             const i = item.indexOf(':');
-            const [val, key] = [item.substring(0, i), item.substring(i+1).match(/<\$.*\$>/) ? decodeURIComponent(item.substring(i+1)) : item.substring(i+1)];
+            const [val, key] = [item.substring(0, i).replace(/\-([a-z])/g,(match,p1)=>p1.toUpperCase()), item.substring(i+1).match(/<\$.*\$>/) ? decodeURIComponent(item.substring(i+1)) : item.substring(i+1)];
             acc[val.trim()] = isEval(key.replace(/ +/g," ").trim(), element, elementReplace);
             return acc;
         },{});

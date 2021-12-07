@@ -1,5 +1,5 @@
 import { colors, colorReg } from './colorMap';
-import AnimationWorker from './animation.worker';
+import { AnimationWorker }  from './animationLocal';
 
 interface option {
     fnKeys?:fnKeys,
